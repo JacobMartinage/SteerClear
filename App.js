@@ -6,23 +6,14 @@ Mapbox.setAccessToken('sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWZvODdjMGtmeTJtcHl1Nn
 
 const App = () => {
 
-  // supabase auth session state 
-  const [session, setSession] = useState<Session | null>(null)
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-  }, [])
 
   return (
     <View style={styles.page}>
       <View style={styles.container}>
         <Mapbox.MapView style={styles.map} />
+        <Text className = "text-lg mb-4"> aaaaaaaa
+        </Text>
+        <Text className = "text-sm"> aaaaaaaa</Text>
       </View>
     </View>
   );
