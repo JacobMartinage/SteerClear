@@ -20,6 +20,8 @@
     "nativewind": "^4.1.23",
     "react": "18.3.1",
     "react-native": "0.76.6",
+    "react-native-reanimated": "^3.16.7",
+    "react-native-safe-area-context": "^5.1.0",
     "tailwindcss": "^3.4.17"
   },
   "devDependencies": {
