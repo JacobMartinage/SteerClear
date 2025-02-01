@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { signInWithEmail, signUpWithEmail, sendPasswordReset, addUsername } from '../utils/auth';
 
-
 export default function AuthScreen() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -48,13 +47,18 @@ export default function AuthScreen() {
         value={email}
         onChangeText={setEmail}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        secureTextEntry
-        value={password}
-        onChangeText={setUsername}
-      />
+      
+      {/* ✅ Show Username field only if signing up */}
+      {!isLogin && (
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          autoCapitalize="none"
+          value={username}
+          onChangeText={setUsername}
+        />
+      )}
+
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -99,3 +103,4 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
 });
+
