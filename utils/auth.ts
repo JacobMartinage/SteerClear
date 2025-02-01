@@ -62,4 +62,12 @@ export default function Auth() {
     setLoading(false)
   }
 
+ 
+    async function sendPasswordReset(emailReset) {
+      setLoading(true)
+      const { error } = await supabase.from('profiles')
+  
+      if (error) Alert.alert(error.message)
+      setLoading(false)
+    }
 }
