@@ -5,6 +5,7 @@ import { signInWithEmail, signUpWithEmail, sendPasswordReset } from '../utils/au
 
 export default function AuthScreen() {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true); // Toggle between Login & Signup
@@ -15,7 +16,7 @@ export default function AuthScreen() {
       if (isLogin) {
         await signInWithEmail(email, password); // ✅ Use function from auth.js
       } else {
-        await signUpWithEmail(email, password); // ✅ Use function from auth.js
+        await signUpWithEmail(email, password, username); // ✅ Use function from auth.js
         Alert.alert('Check your inbox for verification email!');
       }
     } catch (error) {
@@ -45,6 +46,13 @@ export default function AuthScreen() {
         autoCapitalize="none"
         value={email}
         onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        secureTextEntry
+        value={password}
+        onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}
