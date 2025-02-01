@@ -1,3 +1,4 @@
+import { supabase } from "../lib/supabase";
 
 class Database {
     
@@ -186,7 +187,11 @@ class Database {
      * @param {string} account The account to associate with the incident
      * @returns {Promise<any>} A promise that resolves to the inserted incident
      */
-    static async insertIncident(time, date, description, threatLevel, lat, long, account) {
+    static async insertIncident(time, date, description, lat, long, account) {
+        // threatlevel
+        const threatLevel = await supabase.functions.invoke('calc-threat-level', {
+            body: {data: description}
+        })
       const { data, error } = await supabase.from('incidents').insert([
         { time, date, description, threat_level: threatLevel, lat, long, account }
       ]);
