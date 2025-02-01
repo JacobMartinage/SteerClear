@@ -17,13 +17,20 @@
         "@rnmapbox/maps",
         {
           "RNMapboxMapsVersion": "11.8.0",
-          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWZvODdjMGtmeTJtcHl1NnB5bXA1MiJ9.87f4lSh43tG1Qxvaus4K8A"
-        
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWZvODdjMGtmeTJtcHl1NnB5bXA1MiJ9.87f4lSh43tG1Qxvaus4K8A",
+          "expo-location": 
+          {
+            "locationWhenInUsePermission": "Show current location on map."
+          }
         }
       ]
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "SafeWalk",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -33,6 +40,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4c94ea63-63ea-4a26-9e74-1cc218f435ff"
+      }
     }
   }
 }
