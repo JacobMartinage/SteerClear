@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Mapbox from '@rnmapbox/maps';
+import { MAPBOX_TOKEN } from "@env";
 import { createClient, Session } from '@supabase/supabase-js';
 const supabaseUrl = 'https://your-supabase-url.supabase.co';
 const supabaseAnonKey = 'your-supabase-anon-key';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-Mapbox.setAccessToken('sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWZvODdjMGtmeTJtcHl1NnB5bXA1MiJ9.87f4lSh43tG1Qxvaus4K8A');
+Mapbox.setAccessToken(MAPBOX_TOKEN);
 
 const App = () => {
     // Supabase auth session state 
