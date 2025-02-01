@@ -9,17 +9,27 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.0",
+    "@react-navigation/native": "^7.0.14",
+    "@react-navigation/stack": "^7.1.1",
     "@rnmapbox/maps": "^10.1.33",
+    "@supabase/supabase-js": "^2.48.1",
+    "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "expo": "~52.0.28",
     "expo-dev-client": "~5.0.11",
     "expo-location": "~18.0.5",
     "expo-status-bar": "~2.0.1",
+    "expo-updates": "~0.26.15",
     "nativewind": "^4.1.23",
     "openai": "^4.82.0",
     "react": "18.3.1",
     "react-native": "0.76.6",
-    "react-native-dotenv": "^3.4.11"
+    "react-native-dotenv": "^3.4.11",
+    "react-native-gesture-handler": "^2.22.1",
+    "react-native-reanimated": "^3.16.7",
+    "react-native-safe-area-context": "^5.1.0",
+    "react-native-screens": "^4.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
