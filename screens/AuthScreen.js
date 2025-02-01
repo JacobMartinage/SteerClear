@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import { signInWithEmail, signUpWithEmail, sendPasswordReset } from '../utils/auth'; // ✅ Import from auth.ts
+import { signInWithEmail, signUpWithEmail, sendPasswordReset } from '../utils/auth';
+
 
 export default function AuthScreen() {
   const [email, setEmail] = useState('');
