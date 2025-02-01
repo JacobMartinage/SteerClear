@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import { signInWithEmail, signUpWithEmail, sendPasswordReset } from '../utils/auth';
+import { signInWithEmail, signUpWithEmail, sendPasswordReset, addUsername } from '../utils/auth';
 
 export default function AuthScreen() {
   const [email, setEmail] = useState('');
@@ -15,8 +15,9 @@ export default function AuthScreen() {
       if (isLogin) {
         await signInWithEmail(email, password); // ✅ Use function from auth.js
       } else {
-        await signUpWithEmail(email, password, username); // ✅ Use function from auth.js
+        await signUpWithEmail(email, password); // ✅ Use function from auth.js
         Alert.alert('Check your inbox for verification email!');
+        await addUsername(username)
       }
     } catch (error) {
       Alert.alert(error.message);

@@ -9,7 +9,7 @@ export async function signInWithEmail(email: string, password: string) {
 
 // ✅ Sign Up Function
 export async function signUpWithEmail(email: string, password: string) {
-  const { error } = await supabase.auth.signUp({ email, password });
+  const { error } = await supabase.auth.signUp({ email, password});
   if (error) throw error;
 }
 
@@ -23,4 +23,16 @@ export async function sendPasswordReset(email: string) {
 export async function logOutAccount() {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
+}
+
+export async function getAccountID() {
+  const res = (await supabase.auth.getUser()).data.user.id
+
+  return res;
+
+}
+
+export async function addUsername(newUsername: string) {
+  const currUser = await getAccountID();
+  const { error } = await supabase.from('profiles').update({username: newUsername}).eq('id', currUser);
 }
