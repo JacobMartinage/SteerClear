@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import Mapbox from '@rnmapbox/maps';
 import * as Location from 'expo-location';
 import { logOutAccount } from '../utils/auth'; // ✅ Import logout function
+import { Ionicons } from '@expo/vector-icons'; // ✅ Import icons for better UI
 
 // ✅ Set Mapbox Access Token
 Mapbox.setAccessToken('sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg');
@@ -58,10 +59,10 @@ export default function HomeScreen() {
             </Mapbox.PointAnnotation>
           </Mapbox.MapView>
 
-          {/* ✅ Logout Button */}
-          <View style={styles.logoutContainer}>
-            <Button title="Logout" onPress={logOutAccount} color="red" />
-          </View>
+          {/* ✅ Small Logout Button in Top Right */}
+          <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}>
+            <Ionicons name="log-out-outline" size={24} color="white" />
+          </TouchableOpacity>
         </>
       ) : (
         <Text style={styles.text}>No Location Data</Text>
@@ -83,13 +84,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     borderRadius: 10,
   },
-  logoutContainer: {
+  logoutButton: {
     position: 'absolute',
-    bottom: 30,
-    alignSelf: 'center',
-    backgroundColor: 'white',
+    top: 40,
+    right: 20,
+    backgroundColor: 'red',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 50,
+    elevation: 5, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
   text: {
     textAlign: 'center',
@@ -97,3 +103,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
