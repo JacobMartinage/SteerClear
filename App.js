@@ -51,8 +51,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     container: {
-        height: 300,
-        width: 300,
+        height: '80%',
+        width: '100%',
+        marginBottom: '45%'
     },
     map: {
         flex: 1
