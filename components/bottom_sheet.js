@@ -1,6 +1,6 @@
 import 'react-native-get-random-values';
 import React, { useCallback, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Button, Alert } from 'react-native';
+import { View, StyleSheet, Button, Alert, TouchableOpacity, Text } from 'react-native';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -45,7 +45,13 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute }) => {
     handlePresentModal();
   }, [handlePresentModal]);
 
-  async function fetchDestinationCoordinates() {
+  const handleGetDirections = async () => {
+    // First collapse the bottom sheet
+    if (bottomSheetModalRef.current) {
+      bottomSheetModalRef.current.collapse();
+    }
+
+    // Then proceed with fetching directions
     if (!destination) {
       Alert.alert('Enter a location');
       return;
@@ -66,7 +72,7 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute }) => {
     } catch (error) {
       Alert.alert('Error fetching location', error.message);
     }
-  }
+  };
 
   async function getDirections(destinationCoords) {
     const currentLocation = userLocation || location;
@@ -109,7 +115,7 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute }) => {
                   key: api_key,
                   language: 'en',
                 }}
-                fetchDetails={true} // Ensures details object is available
+                fetchDetails={true}
                 onPress={(data, details = null) => {
                   if (details && details.geometry && details.geometry.location) {
                     const formattedAddress = details.formatted_address;
@@ -127,7 +133,9 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute }) => {
                 styles={googlePlacesStyles}
               />
             </View>
-            <Button title="Get Directions" onPress={fetchDestinationCoordinates} />
+            <TouchableOpacity style={styles.floatingButton} onPress={handleGetDirections}>
+              <Text style={styles.buttonText}>Get Directions</Text>
+            </TouchableOpacity>
           </BottomSheetView>
         </BottomSheetModal>
       </BottomSheetModalProvider>
@@ -152,6 +160,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf0f1',
     width: '100%',
   },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 50,
+    alignSelf: 'center',
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    elevation: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 const googlePlacesStyles = {
@@ -169,7 +192,7 @@ const googlePlacesStyles = {
   },
   listView: {
     width: '100%',
-    maxHeight: '100%',
+    maxHeight: '20%',
     flexGrow: 1,
   },
 };
