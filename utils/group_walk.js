@@ -5,7 +5,7 @@ class GroupWalk {
     // create a new group in the groups table
     static async createGroup(newName, size) {
         username = await getUsername;
-        const { data, error } = await supabase.from('groups').insert([{name: newName, size: size, owner: username, lat: location.lat, long: location.long}])
+        const { data, error } = await supabase.from('groups').insert([{name: newName, size: size, owner: username, lat: Location.lat, long: Location.long}])
         if (error) console.error('Error inserting group:', error);
 
         await joinGroup();

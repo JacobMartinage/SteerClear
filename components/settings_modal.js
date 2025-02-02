@@ -3,6 +3,8 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-na
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DialogInput from 'react-native-dialog-input'; // Ensure you have this package installed
 import { sendPasswordReset, deleteAccount, addUsername } from '../utils/auth';
+import GroupWalk from '../utils/group_walk'; 
+import * as Location from 'expo-location';
 
 const OptionsModal = ({ visible, onClose, logOutAccount }) => {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
@@ -10,6 +12,44 @@ const OptionsModal = ({ visible, onClose, logOutAccount }) => {
   const handleUserName = () => {
     setIsDialogVisible(true);
   };
+
+  const handleCreateGroup = async () => {
+    try {
+      // Request user's location
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Enable location permissions to create a group.');
+        return;
+      }
+      // Prompt for group name
+      Alert.prompt(
+        'Create Group',
+        'Enter a group name:',
+        async (newName) => {
+            console.log(newName)
+
+          if (!newName) return;
+          console.log(newName)
+
+
+          const size = 10; 
+          const response = await GroupWalk.createGroup(newName, size);
+          console.log("a")
+
+          if (response) {
+            Alert.alert('Success', `Group "${newName}" created successfully.`);
+            GroupWalk.createGroup(newName, size);
+          } else {
+            Alert.alert('Error', 'Failed to create the group.');
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Error creating group:', error);
+      Alert.alert('Error', 'Something went wrong while creating the group.');
+    }
+  };
+
 
   const handlePasswordReset = () => {
     Alert.alert(
@@ -46,7 +86,7 @@ const OptionsModal = ({ visible, onClose, logOutAccount }) => {
           <Text style={styles.optionText}>Log Out</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handlePasswordReset}>
+        <TouchableOpacity onPress={handleCreateGroup}>
           <Text style={styles.optionText}>Group Walk</Text>
         </TouchableOpacity>
 
