@@ -3,6 +3,21 @@ import { getAccountID, getUsername } from "./auth";
 
 class Database {
     
+
+    static async getEmergencyContact() {
+        account = await getUsername();
+        const { data, error } = await supabase.from('profiles').select('emergency_contact').eq('username', username);
+        if (error) console.error('Error fetching safety records:', error);
+        return data;
+    }
+
+    static async getEmergencyContact(newContact) {
+        account = await getUsername();
+        const { data, error } = await supabase.from('profiles').update([{emergency_contact: newContact}]).eq('username', username);
+        if (error) console.error('Error fetching safety records:', error);
+        return data;
+    }
+
     /**
      * Get all safety records
      * @returns {Promise<any[]>} A promise that resolves to an array of safety records

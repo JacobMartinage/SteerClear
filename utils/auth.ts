@@ -42,5 +42,5 @@ export async function getUsername() {
 
 export async function addUsername(newUsername: string) {
   const currUser = await getAccountID();
-  const { error } = await supabase.from('profiles').update({username: newUsername}).eq('id', currUser);
+  const { error } = await supabase.from('profiles').update([{username: newUsername}]).eq('id', currUser);
 }
