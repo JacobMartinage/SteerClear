@@ -12,7 +12,7 @@ import {
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { GOOGLE_PLACES_API_KEY } from '@env';
 import { Keyboard, Pressable } from 'react-native';
-
+import { getDirections } from '../utils/routing'; 
 
 const api_key = GOOGLE_PLACES_API_KEY;
 const MAPBOX_ACCESS_TOKEN = 'sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg';
@@ -66,34 +66,17 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute, setSteps
       }
       
       const { lat, lng } = geoData.results[0].geometry.location;
-      getDirections([lng, lat]);
+      await getDirections(
+        userLocation || location,
+        [lng, lat],
+        setRoute
+      );
     } catch (error) {
       Alert.alert('Error fetching location', error.message);
     }
   };
 
-  async function getDirections(destinationCoords) {
-    const currentLocation = userLocation || location;
-    if (!currentLocation) {
-      Alert.alert('Current location not available');
-      return;
-    }
 
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/walking/${currentLocation.longitude},${currentLocation.latitude};${destinationCoords[0]},${destinationCoords[1]}?geometries=geojson&steps=true&banner_instructions=true&access_token=${MAPBOX_ACCESS_TOKEN}`
-      );
-      const data = await response.json();
-      if (!data.routes || data.routes.length === 0) {
-        Alert.alert('No route found');
-        return;
-      }
-      setRoute(data.routes[0].geometry);
-      setSteps(data.routes[0].legs[0].steps);
-    } catch (error) {
-      Alert.alert('Error fetching directions', error.message);
-    }
-  }
 
   return (
     <GestureHandlerRootView style={styles.container}>

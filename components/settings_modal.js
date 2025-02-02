@@ -1,44 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import DialogInput from 'react-native-dialog-input'; // Ensure you have this package installed
+import DialogInput from 'react-native-dialog-input';
 import { sendPasswordReset, deleteAccount, addUsername } from '../utils/auth';
 import GroupWalk from '../utils/group_walk'; 
 import * as Location from 'expo-location';
 
 const OptionsModal = ({ visible, onClose, logOutAccount }) => {
+  // Username editing state
   const [isDialogVisible, setIsDialogVisible] = useState(false);
+  
+  // Store location in state
+  const [userLocation, setUserLocation] = useState(null);
 
-  const handleUserName = () => {
-    setIsDialogVisible(true);
-  };
+  // 1) Place the useEffect at the top level of the component
+  useEffect(() => {
+    const fetchUserLocation = async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Permission Denied', 'Allow location access to use this feature.');
+          return;
+        }
+        let loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+        setUserLocation(loc.coords);
+      } catch (error) {
+        console.error('Error fetching location:', error);
+      }
+    };
+    fetchUserLocation();
+  }, []);
 
+  // 2) Reference userLocation in your event handler
   const handleCreateGroup = async () => {
     try {
-      // Request user's location
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Enable location permissions to create a group.');
+      if (!userLocation) {
+        Alert.alert('No location available yet', 'Please wait for location to be determined.');
         return;
       }
-      // Prompt for group name
+
+      const { latitude, longitude } = userLocation;
+
       Alert.prompt(
         'Create Group',
         'Enter a group name:',
         async (newName) => {
-            console.log(newName)
-
           if (!newName) return;
-          console.log(newName)
-
+          console.log("Group name:", newName);
 
           const size = 10; 
-          const response = await GroupWalk.createGroup(newName, size);
-          console.log("a")
+          console.log("vals", newName, size, latitude, longitude);
+
+          const response = await GroupWalk.createGroup(newName, size, latitude, longitude);
+          console.log("After createGroup call:", response);
 
           if (response) {
             Alert.alert('Success', `Group "${newName}" created successfully.`);
-            GroupWalk.createGroup(newName, size);
           } else {
             Alert.alert('Error', 'Failed to create the group.');
           }
@@ -50,6 +67,9 @@ const OptionsModal = ({ visible, onClose, logOutAccount }) => {
     }
   };
 
+  const handleUserName = () => {
+    setIsDialogVisible(true);
+  };
 
   const handlePasswordReset = () => {
     Alert.alert(
@@ -69,7 +89,13 @@ const OptionsModal = ({ visible, onClose, logOutAccount }) => {
       'Are you sure you want to delete your account?',
       [
         { text: 'Cancel', onPress: () => console.log('Deletion cancelled'), style: 'cancel' },
-        { text: 'OK', onPress: () => { logOutAccount(); deleteAccount(); } },
+        { 
+          text: 'OK',
+          onPress: () => {
+            logOutAccount();
+            deleteAccount();
+          }
+        },
       ],
       { cancelable: false }
     );
@@ -109,7 +135,7 @@ const OptionsModal = ({ visible, onClose, logOutAccount }) => {
         message="Enter your new username"
         hintInput="New Username"
         submitInput={(inputText) => {
-            addUsername(inputText);
+          addUsername(inputText);
           setIsDialogVisible(false);
         }}
         closeDialog={() => setIsDialogVisible(false)}

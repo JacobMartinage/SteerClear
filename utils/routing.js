@@ -34,7 +34,7 @@ async function getIncidentsNearMidpoint(userLocation, destinationCoords) {
     userLocation.latitude, userLocation.longitude,
     midpoint[1], midpoint[0]
   );
-  const searchRadius = distanceUM * 1.25; 
+  const searchRadius = distanceUM * 1.5; 
 
   const allIncidents = await IncidenceFilter.getFilteredIncidences();
 
