@@ -105,14 +105,17 @@ export default function HomeScreen() {
 
   async function submitReport(report) {
     if (!report) {
+      
       Alert.alert("Error", "Please enter or select a report.");
       return;
     }
   
     //get current time & date
     const now = new Date();
-    const time = now.toLocaleTimeString();
+    const time = now.toISOString().split('T')[1].split('.')[0];
     const date = now.toISOString().split('T')[0]; 
+    console.log(time)
+    console.log(date)
   
     //get current user
     const { data: user, error: userError } = await supabase.auth.getUser();
@@ -201,6 +204,12 @@ export default function HomeScreen() {
           </TouchableOpacity>
           </View>
 
+          <TouchableOpacity style={styles.safeButton} onPress={() => setReportModalVisible(true)}>
+            <Ionicons name="lock-closed" size={28} color="white" />
+          </TouchableOpacity>
+
+          
+
           <Bottomcomp/>
          
           <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}>
@@ -273,6 +282,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 100,
+    marginLeft: 10,
+    marginRight: 10,
 
   },
 
@@ -282,7 +293,9 @@ const styles = StyleSheet.create({
     right: 8, 
     backgroundColor: 'red', 
     padding: 10, 
-    borderRadius: 50 
+    borderRadius: 50,
+    marginRight: 10,
+
   },
 
   closeButton: {
@@ -291,6 +304,13 @@ const styles = StyleSheet.create({
     right: 10,
     padding: 5,
     zIndex: 10,
+  },
+  safeButton: { 
+    backgroundColor: 'blue', 
+    padding: 10, 
+    borderRadius: 50,
+    marginRight: 10,
+
   },
 
   reportButton: { 
@@ -344,7 +364,9 @@ const styles = StyleSheet.create({
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center', 
-    backgroundColor: 'rgba(0,0,0,0)' 
+    backgroundColor: 'rgba(0,0,0,0)',
+    bottom: 100, 
+
   },
 
   modalContent: { 

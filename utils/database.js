@@ -186,6 +186,7 @@ class Database {
         console.log("Threat Level Response:", threatResponse);
         // Insert the incident into the database
         account = await getUsername();
+        console.log("Time:", time)
         const { data, error } = await supabase.from('incidents').insert([
           { time, date, description, threat_level: threatLevel, lat, long, account}
         ]);
@@ -230,6 +231,7 @@ class Database {
           console.log("Threat Level Response:", threatResponse);
           // Insert the incident into the database
           account = await getUsername();
+          console.log("Time:", time)
           const { data, error } = await supabase.from('safety').insert([
             { time, date, description, threat_level: threatLevel, lat, long, account}
           ]);
