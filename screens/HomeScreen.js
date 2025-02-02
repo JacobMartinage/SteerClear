@@ -10,6 +10,7 @@ import Bottomcomp from '../components/bottom_sheet';
 import { fetchHeatmapData, convertToGeoJSON, getHeatmapStyle, updateHeatmap } from '../components/heatmap';
 import DialogInput from 'react-native-dialog-input';
 import OptionsModal from '../components/settings_modal';
+import ReportModal from '../components/reports_modal';
 
 
 //set token
@@ -150,50 +151,7 @@ export default function HomeScreen() {
     }
   }
 
-  async function submitReport(report) {
-    if (!report) {
-      Alert.alert("Error", "Please enter or select a report.");
-      return;
-    }
   
-    //get current time & date
-    const now = new Date();
-    const time = now.toLocaleTimeString();
-    const date = now.toISOString().split('T')[0]; 
-  
-    //get current user
-    const { data: user, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      Alert.alert("Error", "Unable to get user information.");
-      return;
-    }
-  
-    //check location
-    if (!location) {
-      Alert.alert("Error", "Location not available.");
-      return;
-    }
-  
-    //insert into Supabase
-    const response = await Database.insertIncident(
-      time, 
-      date, 
-      report, 
-      location.latitude, 
-      location.longitude, 
-      user.email
-    );
-  
-    if (response) {
-      Alert.alert("Report Submitted", `You reported: ${report}`);
-    } else {
-      Alert.alert("Error", "Failed to submit the report.");
-    }
-  
-    //close modal
-    setReportModalVisible(false);
-    setCustomReport('');
-  }
 
   async function submiteSafeReport(report) {
     if (!report) {
@@ -283,7 +241,16 @@ export default function HomeScreen() {
           </Mapbox.MapView>
 
 
+
+          {/* Modals */}
           <OptionsModal visible={optionsModal} onClose={() => setOptionsModal(false)} logOutAccount={logOutAccount} />
+
+          <ReportModal 
+          visible={reportModalVisible} 
+          onClose={() => setReportModalVisible(false)} 
+          location={location} 
+           presetReports={presetReports} 
+/>
 
 
 
@@ -298,7 +265,7 @@ export default function HomeScreen() {
               <Text style={styles.sosText}>SOS</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.reportButton} onPress={() => setReportModalVisible(true)}>
+            <TouchableOpacity style={styles.reportButton} onPress={() => setReportModalVisible(true) }>
               <Ionicons name="alert-circle-outline" size={24} color="white" />
             </TouchableOpacity>
 
@@ -313,39 +280,7 @@ export default function HomeScreen() {
 
           <Bottomcomp location={location} setRoute={setRoute} />
 
-          {/* Report Modal */}
-          <Modal visible={reportModalVisible} animationType="slide" transparent>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <TouchableOpacity style={styles.closeButton} onPress={() => setReportModalVisible(false)}>
-                  <Ionicons name="close" size={24} color="black" />
-                </TouchableOpacity>
-
-                <Text style={styles.modalTitle}>Report an Issue</Text>
-
-                <FlatList
-                  data={presetReports}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.reportOption} onPress={() => submitReport(item)}>
-                      <Text style={styles.reportText}>{item}</Text>
-                    </TouchableOpacity>
-                  )}
-                  keyExtractor={(item) => item}
-                />
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="Describe the issue..."
-                  value={customReport}
-                  onChangeText={setCustomReport}
-                />
-
-                <TouchableOpacity style={styles.submitButton} onPress={() => submitReport(customReport)}>
-                  <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
+          
 
           {/* Safety Modal */}
           <Modal visible={safeModalVisible} animationType="slide" transparent>
