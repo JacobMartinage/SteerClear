@@ -31,7 +31,7 @@ const Bottomcomp = () => {
           index={0}
           enableDismissOnClose={false}
           enablePanDownToClose = {false}
-          topInset={250}
+          topInset={200}
         >
           <BottomSheetView style={styles.contentContainer}>
           <BottomSheetTextInput style={styles.input} placeholder='Search' />

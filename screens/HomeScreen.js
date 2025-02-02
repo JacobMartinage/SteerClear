@@ -20,6 +20,7 @@ export default function HomeScreen() {
   const [route, setRoute] = useState(null);
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [customReport, setCustomReport] = useState('');
+  const [safeModalVisible, setSafeModalVisible] = useState(false);
 
   const presetReports = [
     "I felt unsafe",
@@ -151,6 +152,55 @@ export default function HomeScreen() {
     setCustomReport('');
   }
 
+  async function submiteSafeReport(report) {
+    if (!report) {
+      
+      Alert.alert("Error", "Please enter or select a report.");
+      return;
+    }
+  
+    //get current time & date
+    const now = new Date();
+    const time = now.toISOString().split('T')[1].split('.')[0];
+    const date = now.toISOString().split('T')[0]; 
+    console.log(time)
+    console.log(date)
+  
+    //get current user
+    const { data: user, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      Alert.alert("Error", "Unable to get user information.");
+      return;
+    }
+  
+    //check location
+    if (!location) {
+      Alert.alert("Error", "Location not available.");
+      return;
+    }
+  
+    //insert into Supabase
+    const response = await Database.insertSafetyRecord(
+      time, 
+      date, 
+      report, 
+      location.latitude, 
+      location.longitude, 
+      user.email
+    );
+  
+    if (response) {
+      Alert.alert("Report Submitted", `You reported: ${report}`);
+    } else {
+      Alert.alert("Error", "Failed to submit the report.");
+    }
+  
+    //close modal
+    setSafeModalVisible(false);
+    setCustomReport('');
+  }
+
+
   function triggerSOS() {
     Alert.alert("SOS Activated", "Emergency services or contacts will be notified!");
   }
@@ -194,27 +244,35 @@ export default function HomeScreen() {
 
 
           <View style = {styles.finalflex}>
+
           <TouchableOpacity style={styles.sosButton} onLongPress={triggerSOS}>
-            <Ionicons name="alert" size={28} color="white" />
-          </TouchableOpacity>
+              <Text style = {styles.sosText}>SOS</Text>
+              </TouchableOpacity>
 
 
-          <TouchableOpacity style={styles.reportButton} onPress={() => setReportModalVisible(true)}>
-            <Ionicons name="alert-circle-outline" size={28} color="white" />
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.reportButton} onPress={() => setReportModalVisible(true)}>
+              <Ionicons name="alert-circle-outline" size={24} color="white" />
+            </TouchableOpacity>
+
+
+
+            <TouchableOpacity style={styles.safeButton} onPress={() => setSafeModalVisible(true)}>
+              <Ionicons name="lock-closed" size={24} color="white" />
+            </TouchableOpacity>
+
+
+            <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}>
+              <Ionicons name="log-out-outline" size={20} color="white" />
+            </TouchableOpacity>
+
           </View>
 
-          <TouchableOpacity style={styles.safeButton} onPress={() => setReportModalVisible(true)}>
-            <Ionicons name="lock-closed" size={28} color="white" />
-          </TouchableOpacity>
+
 
           
 
           <Bottomcomp/>
          
-          <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}>
-            <Ionicons name="log-out-outline" size={24} color="white" />
-          </TouchableOpacity>
 
 
 
@@ -256,6 +314,33 @@ export default function HomeScreen() {
               </View>
             </View>
           </Modal>
+
+          {/* safety modal */}
+          <Modal visible={safeModalVisible} animationType="slide" transparent>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                
+                {/* Close Button */}
+                <TouchableOpacity style={styles.closeButton} onPress={() => setSafeModalVisible(false)}>
+                  <Ionicons name="close" size={24} color="black" />
+                </TouchableOpacity>
+
+                <Text style={styles.modalTitle}>Why is this safe?</Text>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="How safe is it"
+                  value={customReport}
+                  onChangeText={setCustomReport}
+                />
+
+                <TouchableOpacity style={styles.submitButton} onPress={() => submiteSafeReport(customReport)}>
+                  <Text style={styles.buttonText}>Submit</Text>
+                </TouchableOpacity>
+                
+              </View>
+            </View>
+          </Modal>
         </>
       ) : (
         <Text style={styles.text}>No Location Data</Text>
@@ -277,25 +362,56 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue', 
     borderRadius: 10 
   },
-  finalflex: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 100,
-    marginLeft: 10,
-    marginRight: 10,
+
+  finalFlex: {
+    position: 'absolute',
+    top: 100,  
+    right: 0,  
+  },
+  
+  logoutButton: { 
+    position: 'absolute',
+    backgroundColor: 'red', 
+    top:100,
+    left:10,
+    padding: 15, 
+    borderRadius: 50 
 
   },
 
-  logoutButton: { 
-    position: 'absolute', 
-    top: 160, 
-    right: 8, 
-    backgroundColor: 'red', 
-    padding: 10, 
-    borderRadius: 50,
-    marginRight: 10,
+sosText: {
+  color: 'white',  
+  fontSize: 12,
+},
 
+
+  safeButton: { 
+    position: 'absolute',
+    top:100,
+    right:10,
+    backgroundColor: 'blue', 
+    padding: 15,
+    borderRadius: 50
+
+  },
+
+  reportButton: { 
+    position: 'absolute',
+    top:160,
+    right:10,
+    backgroundColor: '#ff6347', 
+    padding: 15, 
+    borderRadius: 50 
+  },
+  
+
+  sosButton: { 
+    position: 'absolute',
+    top:220,
+    right:10,
+    backgroundColor: 'red', 
+    padding: 15, 
+    borderRadius: 100
   },
 
   closeButton: {
@@ -305,29 +421,9 @@ const styles = StyleSheet.create({
     padding: 5,
     zIndex: 10,
   },
-  safeButton: { 
-    backgroundColor: 'blue', 
-    padding: 10, 
-    borderRadius: 50,
-    marginRight: 10,
-
-  },
-
-  reportButton: { 
-    backgroundColor: '#ff6347', 
-    padding: 15, 
-    borderRadius: 50 
-  },
-  
-
-  sosButton: { 
-    
-    backgroundColor: 'red', 
-    padding: 15, 
-    borderRadius: 50 
-  },
 
   searchContainer: { 
+    
     position: 'absolute', 
     top: 40, 
     left: 20, 

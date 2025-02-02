@@ -233,7 +233,7 @@ class Database {
           account = await getUsername();
           console.log("Time:", time)
           const { data, error } = await supabase.from('safety').insert([
-            { time, date, description, threat_level: threatLevel, lat, long, account}
+            { time, date, description, safety_level: threatLevel, lat, long, account}
           ]);
           if (error) {
             console.error("Error inserting incident:", error);
