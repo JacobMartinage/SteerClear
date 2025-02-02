@@ -8,7 +8,7 @@ import {
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet';
 
-const HomeScreen = () => {
+const Bottomcomp = () => {
   const bottomSheetModalRef = useRef(null);
 
   const handlePresentModal = useCallback(() => {
@@ -22,18 +22,19 @@ const HomeScreen = () => {
   }, [handlePresentModal]);
 
   return (
+
     <GestureHandlerRootView style={styles.container}>
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={bottomSheetModalRef}
-          snapPoints={['20%', '60%']}
+          snapPoints={['20%', '100%']}
           index={0}
           enableDismissOnClose={false}
           enablePanDownToClose = {false}
-          topInset={100}
+          topInset={250}
         >
           <BottomSheetView style={styles.contentContainer}>
-          <BottomSheetTextInput style={styles.input} placeholder='search' />
+          <BottomSheetTextInput style={styles.input} placeholder='Search' />
           </BottomSheetView>
         </BottomSheetModal>
       </BottomSheetModalProvider>
@@ -42,20 +43,16 @@ const HomeScreen = () => {
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    backgroundColor: 'transparent', 
+       flex: 1,
     padding: 24,
     justifyContent: 'center',
-    backgroundColor: 'grey',
-  },
-  innerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   contentContainer: {
-    flex: 1,
     alignItems: 'center',
     minHeight: '20%', 
+    backgroundColor: 'transparent', 
+
   },
   input: {
     width: '90%', 
@@ -68,4 +65,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default Bottomcomp;

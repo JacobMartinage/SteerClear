@@ -6,9 +6,11 @@ import { logOutAccount } from '../utils/auth';
 import { Ionicons } from '@expo/vector-icons';
 import Database from "../utils/database";
 import { supabase } from "../lib/supabase";
+import Bottomcomp from '../components/bottom_sheet';
 
 // ✅ Set Mapbox Access Token
 Mapbox.setAccessToken('sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg');
+
 
 export default function HomeScreen() {
   const [location, setLocation] = useState(null);
@@ -142,12 +144,16 @@ export default function HomeScreen() {
   }
 
   return (
+
     <View style={{ flex: 1 }}>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : location ? (
         <>
+
+
           <Mapbox.MapView style={styles.map}>
+
             <Mapbox.Camera
               zoomLevel={14}
               centerCoordinate={[location.longitude, location.latitude]}
@@ -163,26 +169,30 @@ export default function HomeScreen() {
                 <Mapbox.LineLayer id="routeLayer" style={{ lineColor: 'blue', lineWidth: 5 }} />
               </Mapbox.ShapeSource>
             )}
+
           </Mapbox.MapView>
 
-          <View style={styles.searchContainer}>
-            <TextInput style={styles.searchInput} placeholder="Enter destination..." value={destination} onChangeText={setDestination} />
-            <TouchableOpacity style={styles.searchButton} onPress={fetchDestinationCoordinates}>
-              <Ionicons name="search" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
 
-          <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}>
-            <Ionicons name="log-out-outline" size={24} color="white" />
+          <View style = {styles.finalflex}>
+          <TouchableOpacity style={styles.sosButton} onLongPress={triggerSOS}>
+            <Ionicons name="alert" size={28} color="white" />
           </TouchableOpacity>
+
 
           <TouchableOpacity style={styles.reportButton} onPress={() => setReportModalVisible(true)}>
             <Ionicons name="alert-circle-outline" size={28} color="white" />
           </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity style={styles.sosButton} onLongPress={triggerSOS}>
-            <Ionicons name="alert" size={28} color="white" />
+          <Bottomcomp/>
+         
+          <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}>
+            <Ionicons name="log-out-outline" size={24} color="white" />
           </TouchableOpacity>
+
+
+
+
 
           {/* ✅ Report Modal */}
           <Modal visible={reportModalVisible} animationType="slide" transparent>
@@ -220,7 +230,6 @@ export default function HomeScreen() {
               </View>
             </View>
           </Modal>
-
         </>
       ) : (
         <Text style={styles.text}>No Location Data</Text>
@@ -232,7 +241,9 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   loader: { flex: 1 },
 
-  map: { flex: 1 },
+  map: {  ...StyleSheet.absoluteFillObject, 
+
+   },
 
   marker: { 
     height: 20, 
@@ -240,22 +251,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue', 
     borderRadius: 10 
   },
+  finalflex: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 100,
+
+  },
 
   logoutButton: { 
     position: 'absolute', 
-    top: 40, 
-    right: 20, 
+    top: 160, 
+    right: 8, 
     backgroundColor: 'red', 
     padding: 10, 
-    borderRadius: 50 
-  },
-
-  reportButton: { 
-    position: 'absolute', 
-    bottom: 40, 
-    right: 20, 
-    backgroundColor: '#ff6347', 
-    padding: 15, 
     borderRadius: 50 
   },
 
@@ -266,12 +275,16 @@ const styles = StyleSheet.create({
     padding: 5,
     zIndex: 10,
   },
+
+  reportButton: { 
+    backgroundColor: '#ff6347', 
+    padding: 15, 
+    borderRadius: 50 
+  },
   
 
   sosButton: { 
-    position: 'absolute', 
-    bottom: 40, 
-    left: 20, 
+    
     backgroundColor: 'red', 
     padding: 15, 
     borderRadius: 50 
