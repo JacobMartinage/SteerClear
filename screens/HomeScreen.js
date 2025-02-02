@@ -163,6 +163,9 @@ export default function HomeScreen() {
     if (steps.length > 0) {
       setStepsModalVisible(true); // Show modal when steps are received
     }
+    else {
+      setStepsModalVisible(false);
+    }
   }, [steps]);
 
 
@@ -178,22 +181,57 @@ export default function HomeScreen() {
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : location ? (
         <>
-           {steps.length > 0 && (
-            <FlatList
-              data={steps}
-              horizontal
-              pagingEnabled
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.bannerItem}>
-                  <Text style={styles.instructionText}>
-                    {item.maneuver ? item.maneuver.instruction : "No instruction"}
-                  </Text>
-                </View>
-              )}
-              style={styles.bannerContainer}
-            />
-          )}
+          {stepsModalVisible && (
+          <View style={styles.topModalOverlay} >
+            <View style={styles.topModalContent}>
+              
+              <View style={styles.titleRow}>
+                <Text style={styles.modalTitle}>Turn-by-Turn Directions</Text>
+                <TouchableOpacity
+                  style={styles.closeIconContainer}
+                  onPress={() => setStepsModalVisible(false)}
+                >
+                  <Ionicons name="close" size={25} color="white" />
+                </TouchableOpacity>
+              </View>
+
+              <FlatList
+                data={steps}
+                keyExtractor={(_, index) => index.toString()}
+                horizontal
+                snapToInterval={368}
+                decelerationRate="fast"
+                snapToAlignment="start"
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <View style={styles.stepItem}>
+                    {/* Left arrow */}
+                    <Ionicons
+                      name="chevron-back"
+                      size={20}
+                      color="white"
+                      style={styles.arrowIcon}
+                    />
+
+                    {/* Instruction text */}
+                    <Text style={styles.stepText}>
+                      {item.maneuver?.instruction || 'No instruction'}
+                    </Text>
+
+                    {/* Right arrow */}
+                    <Ionicons
+                      name="chevron-forward"
+                      size={20}
+                      color="white"
+                      style={styles.arrowIcon}
+                    />
+                  </View>
+                )}
+              />
+            </View>
+          </View>
+        )}
+
 
           <Mapbox.MapView style={styles.map}>
             <Mapbox.Camera
@@ -239,26 +277,8 @@ export default function HomeScreen() {
             )}
           </Mapbox.MapView>
 
-           {/* Steps Modal */}
-           <Modal animationType="slide" transparent={true} visible={stepsModalVisible}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Turn-by-Turn Directions</Text>
-                <FlatList
-                  data={steps}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <View style={styles.stepItem}>
-                      <Text style={styles.stepText}>{item.maneuver?.instruction || "No instruction"}</Text>
-                    </View>
-                  )}
-                />
-                <TouchableOpacity style={styles.closeButton} onPress={() => setStepsModalVisible(false)}>
-                  <Text style={styles.closeButtonText}>Close</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
+          
+
 
 
           {/* Modals */}
@@ -298,6 +318,7 @@ export default function HomeScreen() {
               <Ionicons name="options" size={20} color="white" />
             </TouchableOpacity>
           </View>
+
 
           <Bottomcomp location={location} setRoute={setRoute} setSteps={setSteps} />
 
@@ -374,17 +395,80 @@ const styles = StyleSheet.create({
     marginTop: 20, 
     fontSize: 16 
   },
-  bannerContainer: {
-    position: 'absolute',
-    top: 50,
-    width: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: 10,
-  
-  },
 
   buttonText: { 
     color: 'white', 
     fontWeight: 'bold' 
-  }
+  },
+  topModalOverlay: {
+    position: 'absolute',
+    top: -20, 
+    left: 0,
+    right: 0,
+    height: 150,
+    backgroundColor: 'transparent',
+    zIndex: 999,
+    pointerEvents: 'box-none',
+    // pointerEvents="box-none" is set inline
+  },
+  
+  topModalContent: {
+    // remove flex: 1
+    alignSelf: 'center',
+    width: '100%',
+    height: 150, // or 100% of the parent if you want the entire 150px
+    backgroundColor: 'rgba(0,120,255,0.9)',
+    borderRadius: 10,
+    zIndex: 9999,     
+    pointerEvents: 'auto',  
+  },
+  
+  /** A new container to hold the title and the close icon side by side */
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginTop: 50, // or whatever vertical spacing you need
+  },
+  
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center', // remove if you want it left-aligned
+    // remove large marginTop if you are using titleRow margin
+  },
+  
+  closeIconContainer: {
+    // Remove absolute positioning
+    padding: 8,
+  },
+  
+  stepItem: {
+    width: 350,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    marginLeft: 10,
+    marginRight: 10,
+  },
+
+  
+  stepText: {
+    fontSize: 16,
+    textAlign: 'center',
+    flexShrink: 1,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  
+  closeButton: {
+    marginTop:0,
+    padding: 0,
+    backgroundColor: '#ccc',
+    borderRadius: 4,
+    alignSelf: 'center',
+  },
+
 });
