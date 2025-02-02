@@ -1,22 +1,21 @@
-
-class CollegeInfo {
+import { supabase } from '../lib/supabase';
 
      // get list of existing active groups
-     static async getColleges() {
+     export async function getColleges() {
         const { data, error } = await supabase.from('colleges').select()
         if (error) console.error('Error fetching groups:', error);
         return data;
     }
 
      // get list of existing active groups
-     static async getCollegesNames() {
+     export async function getCollegesNames() {
         const { data, error } = await supabase.from('colleges').select('name')
         if (error) console.error('Error fetching groups:', error);
         return data;
     }
 
      // get list of existing active groups
-     static async addCollege(collegename) {
+     export async function addCollege(collegename) {
         username = await getUsername;
         const { data, error } = await supabase.from('profiles').update([{college: collegename}]).eq('username', username)
         if (error) console.error('Error fetching groups:', error);
@@ -24,7 +23,7 @@ class CollegeInfo {
     }
 
      // Parse resources from JSON to make them easy to use in components
-     static parseCollegeResources(resourcesJson) {
+     export async function  parseCollegeResources(resourcesJson) {
         return resourcesJson.resources.map(resource => ({
             name: resource.name,
             description: resource.description,
@@ -36,4 +35,3 @@ class CollegeInfo {
 
 
 
-}
