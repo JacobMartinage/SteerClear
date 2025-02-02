@@ -96,6 +96,20 @@ class Database {
       if (error) console.error('Error fetching incidents by threat level:', error);
       return data;
     }
+
+    // get all incidents
+    static async getIncidents() {
+        const { data, error } = await supabase.from('incidents').select('*');
+        if (error) console.error('Error fetching all incidents:', error);
+        return data;
+    }
+
+    // get all incidents ordered by threat
+    static async getIncidentsOrderThreat() {
+        const { data, error } = await supabase.from('incidents').select('*').order('threat_level',{ ascending: false })
+        if (error) console.error('Error fetching all incidents:', error);
+        return data;
+      }
   
     /**
      * Get user's group information
