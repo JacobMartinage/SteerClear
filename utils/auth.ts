@@ -44,3 +44,9 @@ export async function addUsername(newUsername: string) {
   const currUser = await getAccountID();
   const { error } = await supabase.from('profiles').update([{username: newUsername}]).eq('id', currUser);
 }
+
+export async function deleteAccount() {
+  const { error } = await supabase.functions.invoke('delete-user');
+  if (error) throw error;
+
+}

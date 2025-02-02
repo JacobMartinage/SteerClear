@@ -66,6 +66,7 @@ export default function AuthScreen() {
         value={password}
         onChangeText={setPassword}
       />
+      
       <Button title={loading ? "Loading..." : isLogin ? "Login" : "Sign Up"} onPress={handleAuth} disabled={loading} />
       <Text style={styles.link} onPress={() => setIsLogin(!isLogin)}>
         {isLogin ? "Need an account? Sign Up" : "Already have an account? Login"}
