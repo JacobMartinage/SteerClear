@@ -8,6 +8,9 @@ import Database from "../utils/database";
 import { supabase } from "../lib/supabase";
 import Bottomcomp from '../components/bottom_sheet';
 import { fetchHeatmapData, convertToGeoJSON, getHeatmapStyle, updateHeatmap } from '../components/heatmap';
+import {sendPasswordReset, deleteAccount} from '../utils/auth'
+import DialogInput from 'react-native-dialog-input';
+
 
 //set token
 Mapbox.setAccessToken('sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg');
@@ -23,6 +26,10 @@ export default function HomeScreen() {
   const [safeModalVisible, setSafeModalVisible] = useState(false);
   const [optionsModal, setOptionsModal] = useState(false);
   const [followUser, setFollowUser] = useState(false);
+  const [userName, setUserName] = React.useState('');
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+
+
 
 
   const presetReports = [
@@ -239,6 +246,33 @@ export default function HomeScreen() {
   }
 
 
+
+
+  const handleUserName = () => {
+    setIsDialogVisible(true);
+    console.log(isDialogVisible)
+};
+
+
+  const handlePasswordReset = () => {
+    Alert.alert(
+      'Password Reset',
+      'Are you sure you want to reset you password?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Deletion cancelled'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => sendPasswordReset(),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   const handleDeletePress = () => {
     Alert.alert(
       'Confirm Deletion',
@@ -251,50 +285,18 @@ export default function HomeScreen() {
         },
         {
           text: 'OK',
-          onPress: () => console.log('Account deleted!'),
+          onPress: () => {
+            logOutAccount();
+            deleteAccount();
+          }
         },
       ],
       { cancelable: false }
     );
   };
+  
 
-  const handlePasswordReset = () => {
-    Alert.alert(
-      'Confirm Deletion',
-      'Are you sure you want to delete your account?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Deletion cancelled'),
-          style: 'cancel',
-        },
-        {
-          text: 'OK',
-          onPress: () => console.log('Account deleted!'),
-        },
-      ],
-      { cancelable: false }
-    );
-  };
 
-  const handleUserName = () => {
-    Alert.alert(
-      'Confirm Deletion',
-      'Are you sure you want to delete your account?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Deletion cancelled'),
-          style: 'cancel',
-        },
-        {
-          text: 'OK',
-          onPress: () => console.log('Account deleted!'),
-        },
-      ],
-      { cancelable: false }
-    );
-  };
 
 
   return (
@@ -332,6 +334,9 @@ export default function HomeScreen() {
               </Mapbox.ShapeSource>
             )}
           </Mapbox.MapView>
+
+
+
 
           <View style={styles.finalflex}>
             <TouchableOpacity style={styles.recenterButton} onPress={recenterOnUser}>
@@ -442,7 +447,7 @@ export default function HomeScreen() {
                   <Text style={styles.placeho}>Group Walk</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={handlePasswordReset}>
+                <TouchableOpacity onPress={handleUserName}>
                   <Text style={styles.placeho}>Edit Username</Text>
                 </TouchableOpacity>
 
@@ -454,10 +459,9 @@ export default function HomeScreen() {
                 <TouchableOpacity onPress={handleDeletePress}>
                   <Text style={styles.placeho}>Delete Account</Text>
                 </TouchableOpacity>
-
-
               </View>
             </Modal>
+
         </>
       ) : (
         <Text style={styles.text}>No Location Data</Text>
