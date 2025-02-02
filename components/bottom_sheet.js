@@ -11,6 +11,9 @@ import {
 } from '@gorhom/bottom-sheet';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { GOOGLE_PLACES_API_KEY } from '@env';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Keyboard, Pressable } from 'react-native';
+
 
 const api_key = GOOGLE_PLACES_API_KEY;
 const MAPBOX_ACCESS_TOKEN = 'sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg';
@@ -94,6 +97,8 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute, setSteps
   }
 
   return (
+    <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+
     <GestureHandlerRootView style={styles.container}>
       <BottomSheetModalProvider>
         <BottomSheetModal
@@ -139,6 +144,8 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute, setSteps
         </BottomSheetModal>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
+    </Pressable>
+
   );
 };
 

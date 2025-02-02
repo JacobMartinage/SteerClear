@@ -7,15 +7,15 @@ export default function AuthScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isLogin, setIsLogin] = useState(true); // Toggle between Login & Signup
+  const [isLogin, setIsLogin] = useState(true); 
 
   async function handleAuth() {
     setLoading(true);
     try {
       if (isLogin) {
-        await signInWithEmail(email, password); // ✅ Use function from auth.js
+        await signInWithEmail(email, password);
       } else {
-        await signUpWithEmail(email, password); // ✅ Use function from auth.js
+        await signUpWithEmail(email, password); 
         Alert.alert('Check your inbox for verification email!');
         await addUsername(username)
       }
@@ -29,7 +29,7 @@ export default function AuthScreen() {
     if (!email) return Alert.alert("Enter your email first.");
     setLoading(true);
     try {
-      await sendPasswordReset(email); // ✅ Use function from auth.js
+      await sendPasswordReset(email); 
       Alert.alert('Check your inbox for password reset link.');
     } catch (error) {
       Alert.alert(error.message);
@@ -48,7 +48,7 @@ export default function AuthScreen() {
         onChangeText={setEmail}
       />
       
-      {/* ✅ Show Username field only if signing up */}
+      {/*  Show Username field only if signing up */}
       {!isLogin && (
         <TextInput
           style={styles.input}
@@ -66,7 +66,7 @@ export default function AuthScreen() {
         value={password}
         onChangeText={setPassword}
       />
-      
+
       <Button title={loading ? "Loading..." : isLogin ? "Login" : "Sign Up"} onPress={handleAuth} disabled={loading} />
       <Text style={styles.link} onPress={() => setIsLogin(!isLogin)}>
         {isLogin ? "Need an account? Sign Up" : "Already have an account? Login"}
