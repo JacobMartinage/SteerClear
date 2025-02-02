@@ -11,7 +11,7 @@ class Database {
         return data;
     }
 
-    static async getEmergencyContact(newContact) {
+    static async updateEmergencyContact(newContact) {
         account = await getUsername();
         const { data, error } = await supabase.from('profiles').update([{emergency_contact: newContact}]).eq('username', username);
         if (error) console.error('Error fetching safety records:', error);
