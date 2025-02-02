@@ -419,6 +419,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   logoutButton: { 
+  },
 
   optionsModalCont: {
     flex: 1,
@@ -560,9 +561,9 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     width: '100%' 
   },
-
   buttonText: { 
     color: 'white', 
     fontWeight: 'bold' 
   }
 });
+
