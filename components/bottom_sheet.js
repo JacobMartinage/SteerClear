@@ -43,11 +43,11 @@ const Bottomcomp = () => {
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={bottomSheetModalRef}
-          snapPoints={['20%', '50%']}
+          snapPoints={['20%', '80%']}
           index={0}
           enableDismissOnClose={false}
           enablePanDownToClose = {false}
-          topInset={200}
+          topInset={150}
         >
           <BottomSheetView style={styles.contentContainer}>
             <BottomSheetTextInput

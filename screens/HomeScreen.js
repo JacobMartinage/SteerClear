@@ -264,10 +264,6 @@ export default function HomeScreen() {
 
           </View>
 
-          <TouchableOpacity style={styles.safeButton} onPress={() => setReportModalVisible(true)}>
-            <Ionicons name="lock-closed" size={28} color="white" />
-          </TouchableOpacity>
-
           
 
           <Bottomcomp/>
@@ -388,11 +384,12 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   safeButton: { 
+    position: 'absolute',
+    top:100,
+    right:10,
     backgroundColor: 'blue', 
-    padding: 10, 
+    padding: 15, 
     borderRadius: 50,
-    marginRight: 10,
-
   },
 
   reportButton: { 
