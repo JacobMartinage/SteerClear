@@ -121,7 +121,7 @@ class Database {
 
     // get all incidents ordered by threat
     static async getIncidentsOrderThreat() {
-        const { data, error } = await supabase.from('incidents').select('*').order('threat_level',{ ascending: false })
+        const { data, error } = await supabase.from('incidents').select('*').order('threat_level',{ ascending: false }).order('created_at', {ascending: false})
         if (error) console.error('Error fetching all incidents:', error);
         return data;
       }

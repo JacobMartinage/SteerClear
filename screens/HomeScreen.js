@@ -165,6 +165,13 @@ export default function HomeScreen() {
     }
   }, [steps]);
 
+
+  // add markers to this to then display them 
+  const [markers, setMarkers] = useState([
+    // sample { id: "1", title: "Marker 1", coordinates: [-74.006, 40.7128] }, // New York
+    //{ id: "2", title: "Marker 2", coordinates: [-118.2437, 34.0522] }, // Los Angeles
+  ]);
+
   return (
     <View style={{ flex: 1 }}>
       {loading ? (
@@ -198,7 +205,15 @@ export default function HomeScreen() {
               animationDuration={1000}
             />
 
-
+              {markers.map((marker) => (
+                      <MapboxGL.PointAnnotation
+                        key={marker.id}
+                        id={marker.id}
+                        coordinate={marker.coordinates}
+                      >
+                        <View style={styles.marker} />
+                      </MapboxGL.PointAnnotation>
+                    ))}
             <Mapbox.PointAnnotation id="userLocation" coordinate={[location.longitude, location.latitude]}>
               <View style={styles.marker} />
             </Mapbox.PointAnnotation>
