@@ -37,9 +37,11 @@ export default function HomeScreen() {
     updateHeatmap(setGeojson);
   }, []);
 
-  //get user location
+  // start getting location
   useEffect(() => {
-    const getUserLocation = async () => {
+    let subscription;
+  
+    const startTracking = async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -47,9 +49,18 @@ export default function HomeScreen() {
           setLoading(false);
           return;
         }
-
-        let userLocation = await Location.getCurrentPositionAsync({});
-        setLocation(userLocation.coords);
+  
+        // Start watching location changes
+        subscription = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.High,
+            timeInterval: 2000, // Update every 2 seconds
+            distanceInterval: 5, // Update if user moves 5 meters
+          },
+          (newLocation) => {
+            setLocation(newLocation.coords);
+          }
+        );
       } catch (error) {
         console.error('Error getting location:', error);
         Alert.alert('Error', 'Failed to get location.');
@@ -57,9 +68,16 @@ export default function HomeScreen() {
         setLoading(false);
       }
     };
-
-    getUserLocation();
+  
+    startTracking();
+  
+    return () => {
+      if (subscription) {
+        subscription.remove(); // Cleanup the subscription when unmounting
+      }
+    };
   }, []);
+  
 
   async function fetchDestinationCoordinates() {
     if (!destination) {
@@ -214,11 +232,13 @@ export default function HomeScreen() {
           <Mapbox.MapView style={styles.map}>
 
             <Mapbox.Camera
-              zoomLevel={14}
-              centerCoordinate={[location.longitude, location.latitude]}
-              animationMode="easeTo"
-              animationDuration={1000}
-            />
+                zoomLevel={14}
+                centerCoordinate={[location.longitude, location.latitude]} // Default to SF if location isn't available
+                followUserLocation={true} // Ensures the map follows user
+                followUserMode="normal" // Keeps tracking the user
+                animationMode="easeTo"
+                animationDuration={1000}
+              />
             <Mapbox.PointAnnotation id="userLocation" coordinate={[location.longitude, location.latitude]}>
               <View style={styles.marker} />
             </Mapbox.PointAnnotation>
