@@ -1,6 +1,22 @@
 import Database from "./database";
+import { supabase } from '../lib/supabase';
 
 class IncidenceFilter {
+
+
+    static async getFilteredIncidences() {
+        const { data, error } = await supabase
+            .rpc('filtered_incidents') // Call stored function if needed
+            .limit(50);
+
+        if (error) {
+            console.error('Error fetching filtered incidents:', error);
+            return [];
+        }
+
+        return data;
+    }
+
 
     static async getFilteredIncidences() {
         const incidents = await Database.getIncidentsOrderThreat();
