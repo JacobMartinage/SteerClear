@@ -106,17 +106,14 @@ export default function HomeScreen() {
 
   async function submitReport(report) {
     if (!report) {
-      
       Alert.alert("Error", "Please enter or select a report.");
       return;
     }
   
     //get current time & date
     const now = new Date();
-    const time = now.toISOString().split('T')[1].split('.')[0];
+    const time = now.toLocaleTimeString();
     const date = now.toISOString().split('T')[0]; 
-    console.log(time)
-    console.log(date)
   
     //get current user
     const { data: user, error: userError } = await supabase.auth.getUser();
@@ -267,7 +264,9 @@ export default function HomeScreen() {
 
           </View>
 
-
+          <TouchableOpacity style={styles.safeButton} onPress={() => setReportModalVisible(true)}>
+            <Ionicons name="lock-closed" size={28} color="white" />
+          </TouchableOpacity>
 
           
 
@@ -362,36 +361,37 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue', 
     borderRadius: 10 
   },
+  finalflex: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 100,
+    marginLeft: 10,
+    marginRight: 10,
 
-  finalFlex: {
-    position: 'absolute',
-    top: 100,  
-    right: 0,  
   },
   
   logoutButton: { 
     position: 'absolute',
     backgroundColor: 'red', 
-    top:100,
-    left:10,
-    padding: 15, 
-    borderRadius: 50 
+    padding: 10, 
+    borderRadius: 50,
+    marginRight: 10,
 
   },
 
-sosText: {
-  color: 'white',  
-  fontSize: 12,
-},
-
-
-  safeButton: { 
+  closeButton: {
     position: 'absolute',
-    top:100,
-    right:10,
+    top: 10,
+    right: 10,
+    padding: 5,
+    zIndex: 10,
+  },
+  safeButton: { 
     backgroundColor: 'blue', 
-    padding: 15,
-    borderRadius: 50
+    padding: 10, 
+    borderRadius: 50,
+    marginRight: 10,
 
   },
 
@@ -460,9 +460,7 @@ sosText: {
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center', 
-    backgroundColor: 'rgba(0,0,0,0)',
-    bottom: 100, 
-
+    backgroundColor: 'rgba(0,0,0,0)' 
   },
 
   modalContent: { 

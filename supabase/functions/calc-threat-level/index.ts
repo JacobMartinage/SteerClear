@@ -35,7 +35,7 @@ serve(async (req) => {
 
     // Query OpenAI
     const openai = new OpenAI({ apiKey });
-    const query = `Return a score from 1-10 based on the danger level of the situation. Situation: ${data}. Only return a float value.`;
+    const query = `Return a score from 1-10 based on the danger level of the situation. Situation: ${data}. Only return a float value. Try to have average situations at the bottom of the scale, and extreme situations on the high end of the scale. `;
     console.log("Sending query to OpenAI:", query);
 
     const response = await openai.chat.completions.create({
