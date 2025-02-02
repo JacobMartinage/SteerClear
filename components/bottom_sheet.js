@@ -12,6 +12,8 @@ import {
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { GOOGLE_PLACES_API_KEY } from '@env';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Keyboard, Pressable } from 'react-native';
+
 
 
 // 1) Import your new getDirections from routing.js
@@ -82,6 +84,8 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute }) => {
   };
 
   return (
+    <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+
     <GestureHandlerRootView style={styles.container}>
     <BottomSheetModalProvider>
       <BottomSheetModal
@@ -133,7 +137,8 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute }) => {
                 },
               }}
               textInputProps={{
-                onFocus: () => bottomSheetModalRef.current?.expand(),
+                onFocus: () => bottomSheetModalRef.current?.expand()
+
               }}
 
             />
@@ -145,6 +150,8 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute }) => {
       </BottomSheetModal>
     </BottomSheetModalProvider>
     </GestureHandlerRootView>
+    </Pressable>
+
   );
 };
 
