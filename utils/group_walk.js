@@ -9,14 +9,13 @@ class GroupWalk {
         console.log('username:', username);
         console.log('Calling supabase insert...');
         console.log('vals', newName, groupSize, lati, longi);
-        const { data, error } = await supabase.from('groups').insert([{name: newName, size: groupSize, owner: username, lat: lati, long: longi}])
-        console.log('supabase insert returned:', data, error);
-        if (error) console.error('Error inserting group:', error);
+        supabase.from('groups').insert([{name: newName, size: groupSize, owner: username, lat: lati, long: longi}])
 
-        // joingGroup(newName);
-        data = 'success';
-        console.log('Returning:', data);
-        return data;
+        
+
+        joinGroup(newName);
+ 
+        return "success";
     }
 
     // delete a given group
@@ -25,11 +24,10 @@ class GroupWalk {
     }
 
     // join a group - edits profiles
-    static async joinGroup(group) {
+    static async joinGroup(groupName) {
         username = await getUsername();
-        const { data, error } = await supabase.from('profiles').update([{group: group}]).eq('username', username)
-        if (error) console.error('Failed to join a group:', error);
-        return data;
+        supabase.from('profiles').update([{group: groupName}]).eq('username', username)
+        
     }
 
     // leave a group

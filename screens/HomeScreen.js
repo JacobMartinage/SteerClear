@@ -175,6 +175,17 @@ export default function HomeScreen() {
     //{ id: "2", title: "Marker 2", coordinates: [-118.2437, 34.0522] }, // Los Angeles
   ]);
 
+  function handleLongPress(event) {
+    const [longitude, latitude] = event.geometry.coordinates;
+    setMarkers((prevMarkers) => [...prevMarkers, { id: Date.now().toString(), coordinates: [longitude, latitude] }]);
+  }
+
+  // Function to remove a marker on hold
+  function handleMarkerPress(id) {
+    setMarkers((prevMarkers) => prevMarkers.filter(marker => marker.id !== id));
+  }
+
+
   return (
     <View style={{ flex: 1 }}>
       {loading ? (
@@ -233,7 +244,7 @@ export default function HomeScreen() {
         )}
 
 
-          <Mapbox.MapView style={styles.map}>
+          <Mapbox.MapView style={styles.map} onLongPress={handleLongPress}>
             <Mapbox.Camera
               zoomLevel={14}
               centerCoordinate={[location.longitude, location.latitude]}
@@ -243,15 +254,16 @@ export default function HomeScreen() {
               animationDuration={1000}
             />
 
-              {markers.map((marker) => (
-                      <MapboxGL.PointAnnotation
-                        key={marker.id}
-                        id={marker.id}
-                        coordinate={marker.coordinates}
-                      >
-                        <View style={styles.marker} />
-                      </MapboxGL.PointAnnotation>
-                    ))}
+            {markers.map((marker) => (
+              <Mapbox.PointAnnotation
+                key={marker.id}
+                id={marker.id}
+                coordinate={marker.coordinates}
+                onSelected={() => handleMarkerPress(marker.id)}
+              >
+                <View style={styles.redMarker} />
+              </Mapbox.PointAnnotation>
+            ))}
             <Mapbox.PointAnnotation id="userLocation" coordinate={[location.longitude, location.latitude]}>
               <View style={styles.marker} />
             </Mapbox.PointAnnotation>
@@ -469,6 +481,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     borderRadius: 4,
     alignSelf: 'center',
+  },
+  redMarker: {
+    height: 20,
+    width: 20,
+    backgroundColor: 'red',
+    borderRadius: 10,
   },
 
 });

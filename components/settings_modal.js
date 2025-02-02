@@ -50,17 +50,15 @@ const OptionsModal = ({ visible, onClose, logOutAccount }) => {
           if (!newName) return;
           console.log("Group name:", newName);
 
-          const size = 10; 
-          console.log("vals", newName, size, latitude, longitude);
+          const groupSize = 10; 
+          console.log("vals", newName, groupSize, latitude, longitude);
 
-          const response = await GroupWalk.createGroup(newName, size, latitude, longitude);
+          const response = await GroupWalk.createGroup(newName, groupSize, latitude, longitude);
           console.log("After createGroup call:", response);
 
-          if (response) {
-            Alert.alert('Success', `Group "${newName}" created successfully.`);
-          } else {
-            Alert.alert('Error', 'Failed to create the group.');
-          }
+          
+          Alert.alert('Success', `Group "${newName}" created successfully.`);
+          
         }
       );
     } catch (error) {
