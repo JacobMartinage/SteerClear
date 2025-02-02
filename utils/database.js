@@ -109,25 +109,6 @@ class Database {
     }
   
     /**
-     * Insert a new safety record
-     * @param {string} time The time of the safety record
-     * @param {string} date The date of the safety record
-     * @param {number} lat The latitude of the safety record
-     * @param {number} long The longitude of the safety record
-     * @param {string} safetyLevel The safety level of the safety record
-     * @param {string} description The description of the safety record
-     * @param {string} account The account to associate with the safety record
-     * @returns {Promise<any>} A promise that resolves to the inserted safety record
-     */
-    static async insertSafetyRecord(time, date, lat, long, safetyLevel, description, account) {
-      const { data, error } = await supabase.from('safety').insert([
-        { time, date, lat, long, safety_level: safetyLevel, description, account }
-      ]);
-      if (error) console.error('Error inserting safety record:', error);
-      return data;
-    }
-  
-    /**
      * Insert a new safe area
      * @param {number} lat The latitude of the safe area
      * @param {number} long The longitude of the safe area
@@ -177,17 +158,6 @@ class Database {
       return data;
     }
   
-    /**
-     * Insert a new incident
-     * @param {string} time The time of the incident
-     * @param {string} date The date of the incident
-     * @param {string} description The description of the incident
-     * @param {string} threatLevel The threat level of the incident
-     * @param {number} lat The latitude of the incident
-     * @param {number} long The longitude of the incident
-     * @param {string} account The account to associate with the incident
-     * @returns {Promise<any>} A promise that resolves to the inserted incident
-     */
     static async insertIncident(time, date, description, lat, long) {
       try {
         // Validate description before invoking the function
@@ -230,6 +200,50 @@ class Database {
         throw error;
       }
     }
+
+
+    static async insertSafetyRecord(time, date, description, lat, long) {
+        try {
+          // Validate description before invoking the function
+          if (!description || typeof description !== "string" || description.trim() === "") {
+            throw new Error("Invalid incident description");
+          }
+          console.log("Calling calc-safety-level with description:", description);
+          // Call the Supabase Edge Function
+          const { data: threatResponse, error: threatError } = await supabase.functions.invoke('calc-safe-level', {
+            body: { data: description }
+          });
+          console.log("Threat Level Response:", threatResponse);
+      
+          // Check for errors in the response
+          if (threatError || !threatResponse) {
+            console.log("Threat Level Error:", threatError);
+            console.error("Error invoking calc-threat-level:", threatError || "No response data");
+            throw new Error("Error calculating threat level");
+          }
+      
+          // Ensure threatResponse is a valid number
+          const threatLevel = parseFloat(threatResponse);
+          if (isNaN(threatLevel)) {
+            throw new Error(`Invalid threat level returned: ${threatResponse}`);
+          }
+          console.log("Threat Level Response:", threatResponse);
+          // Insert the incident into the database
+          account = await getUsername();
+          const { data, error } = await supabase.from('safety').insert([
+            { time, date, description, threat_level: threatLevel, lat, long, account}
+          ]);
+          if (error) {
+            console.error("Error inserting incident:", error);
+            throw new Error("Database insertion failed");
+          }
+      
+          return "database insertion successful";
+        } catch (error) {
+          console.error("insertIncident Error:", error.message);
+          throw error;
+        }
+      }
     
   }
   
