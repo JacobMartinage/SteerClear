@@ -160,33 +160,7 @@ const sendText = async () => {
       console.log("Missing location:", location);
     }
   }
-  
-  
-  async function fetchDestinationCoordinates() {
-    if (!destination) {
-      Alert.alert("Enter a location");
-      return;
-    }
 
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(destination)}.json?access_token=sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg`
-      );
-      const data = await response.json();
-      if (data.features.length === 0) {
-        Alert.alert("Location not found");
-        return;
-      }
-      const [longitude, latitude] = data.features[0].center;
-      getDirections([longitude, latitude]);
-    } catch (error) {
-      Alert.alert("Error fetching location", error.message);
-    }
-  }
-
-  function triggerSOS() {
-    Alert.alert('SOS Activated', 'Emergency services or contacts will be notified!');
-  }
 
 
   useEffect(() => {
@@ -234,8 +208,12 @@ const sendText = async () => {
                 <Text style={styles.modalTitle}>Turn-by-Turn Directions</Text>
                 <TouchableOpacity
                   style={styles.closeIconContainer}
-                  onPress={() => setStepsModalVisible(false)}
-                >
+                  onPress={() => {
+                    setStepsModalVisible(false);
+                    setRoute(null);
+                  }}
+                  >
+                
                   <Ionicons name="close" size={25} color="white" />
                 </TouchableOpacity>
               </View>
