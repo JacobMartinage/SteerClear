@@ -32,6 +32,14 @@ export async function getAccountID() {
 
 }
 
+export async function getUsername() {
+  const res = (await supabase.auth.getUser()).data.user.id
+  const ret = (await supabase.from('profiles').select('username').eq('id', res)).data[0].username;
+
+  return ret;
+
+}
+
 export async function addUsername(newUsername: string) {
   const currUser = await getAccountID();
   const { error } = await supabase.from('profiles').update({username: newUsername}).eq('id', currUser);

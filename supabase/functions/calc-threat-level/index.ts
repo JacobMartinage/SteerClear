@@ -1,50 +1,70 @@
-import { serve } from 'https://deno.land/std@0.182.0/http/server.ts'
-import OpenAI from 'https://esm.sh/openai@4.0.0'
+import { serve } from "https://deno.land/std@0.182.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import OpenAI from "https://esm.sh/openai@4.0.0";
+
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 serve(async (req) => {
   try {
-    // Ensure it's a POST request
-    if (req.method !== 'POST') {
-      return new Response('Only POST requests allowed', { status: 405 });
+    console.log("Received request:", req);
+
+    // Validate method
+    if (req.method !== "POST") {
+      console.error("Invalid method:", req.method);
+      return new Response("Only POST requests are allowed", { status: 405 });
     }
 
     // Parse request body
     const { data } = await req.json();
+    console.log("Request body:", data);
 
-    // Ensure 'data' is provided
-    if (!data) {
-      return new Response('Missing "data" in request body', { status: 400 });
+    if (!data || typeof data !== "string" || data.trim() === "") {
+      console.error("Invalid or missing 'data' in request body");
+      return new Response("Invalid 'data' in request body", { status: 400 });
     }
 
-    // Append data to the query
-    const query = `Return a score of 1-10 based on the danger level of the situation, 10 being a violent crime, 1 being the perfect situation. Return the score as a number with two decimals. Low visibility might be a 3 or 4 for reference. Rank it based on potential threat to the people involved/ how uncomfortable someone would be walking by. Only return the score value as a double, and provide no other information. Here is the situation: ${data}`;
-
-    // Get API key from environment
-    const apiKey = Deno.env.get('OPENAI_API_KEY');
+    // Check API key
+    const apiKey = Deno.env.get("OPENAI_API_KEY");
     if (!apiKey) {
-      return new Response('Missing OpenAI API key', { status: 500 });
+      console.error("Missing OpenAI API key");
+      return new Response("Missing OpenAI API key", { status: 500 });
     }
+    console.log("OpenAI API key is present");
 
-    // Initialize OpenAI
+    // Query OpenAI
     const openai = new OpenAI({ apiKey });
+    const query = `Return a score from 1-10 based on the danger level of the situation. Situation: ${data}. Only return a float value`;
+    console.log("Sending query to OpenAI:", query);
 
-    // Call OpenAI API
     const response = await openai.chat.completions.create({
-      messages: [{ role: 'user', content: query }],
-      model: 'gpt-4o-mini',
-      stream: false,
+      model: "gpt-4o",
+      messages: [{ role: "user", content: query }],
+      temperature: 0,
+      max_tokens: 30,
     });
 
-    // Extract and return the response
-    const reply = response.choices[0].message.content.trim();
+    console.log("OpenAI response:", response);
 
-    return new Response(reply, {
-      headers: {
-        'Content-Type': 'text/plain',
-        'Access-Control-Allow-Origin': '*',
-      },
+    // Parse the response
+    const reply = response.choices?.[0]?.message?.content?.trim();
+    const threatLevel = parseFloat(reply);
+
+    if (isNaN(threatLevel)) {
+      console.error("Invalid threat level from OpenAI:", reply);
+      return new Response(`Error: Invalid threat level returned by OpenAI: ${reply}`, { status: 500 });
+    }
+
+    console.log("Threat level calculated:", threatLevel);
+
+    // Return the threat level
+    return new Response(String(threatLevel), {
+      headers: { "Content-Type": "text/plain" },
     });
   } catch (error) {
+    console.error("Unexpected error:", error.message);
     return new Response(`Error: ${error.message}`, { status: 500 });
   }
 });
+

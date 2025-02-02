@@ -4,6 +4,8 @@ import Mapbox from '@rnmapbox/maps';
 import * as Location from 'expo-location';
 import { logOutAccount } from '../utils/auth';
 import { Ionicons } from '@expo/vector-icons';
+import Database from "../utils/database";
+import { supabase } from "../lib/supabase";
 
 // ✅ Set Mapbox Access Token
 Mapbox.setAccessToken('sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg');
@@ -90,12 +92,47 @@ export default function HomeScreen() {
     }
   }
 
-  function submitReport(report) {
+  async function submitReport(report) {
     if (!report) {
       Alert.alert("Error", "Please enter or select a report.");
       return;
     }
-    Alert.alert("Report Submitted", `You reported: ${report}`);
+  
+    // Get current time & date
+    const now = new Date();
+    const time = now.toLocaleTimeString();
+    const date = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+  
+    // Get current user (assuming you have authentication set up in Supabase)
+    const { data: user, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      Alert.alert("Error", "Unable to get user information.");
+      return;
+    }
+  
+    // Ensure location is available
+    if (!location) {
+      Alert.alert("Error", "Location not available.");
+      return;
+    }
+  
+    // Insert the incident into Supabase
+    const response = await Database.insertIncident(
+      time, 
+      date, 
+      report, 
+      location.latitude, 
+      location.longitude, 
+      user.email // Use user's email or ID from Supabase auth
+    );
+  
+    if (response) {
+      Alert.alert("Report Submitted", `You reported: ${report}`);
+    } else {
+      Alert.alert("Error", "Failed to submit the report.");
+    }
+  
+    // Close the modal and reset input
     setReportModalVisible(false);
     setCustomReport('');
   }

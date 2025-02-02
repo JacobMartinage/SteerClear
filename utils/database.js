@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabase";
+import { getAccountID, getUsername } from "./auth";
 
 class Database {
     
@@ -187,17 +188,49 @@ class Database {
      * @param {string} account The account to associate with the incident
      * @returns {Promise<any>} A promise that resolves to the inserted incident
      */
-    static async insertIncident(time, date, description, lat, long, account) {
-        // threatlevel
-        const threatLevel = await supabase.functions.invoke('calc-threat-level', {
-            body: {data: description}
-        })
-      const { data, error } = await supabase.from('incidents').insert([
-        { time, date, description, threat_level: threatLevel, lat, long, account }
-      ]);
-      if (error) console.error('Error inserting incident:', error);
-      return data;
+    static async insertIncident(time, date, description, lat, long) {
+      try {
+        // Validate description before invoking the function
+        if (!description || typeof description !== "string" || description.trim() === "") {
+          throw new Error("Invalid incident description");
+        }
+        console.log("Calling calc-threat-level with description:", description);
+        // Call the Supabase Edge Function
+        const { data: threatResponse, error: threatError } = await supabase.functions.invoke('calc-threat-level', {
+          body: { data: description }
+        });
+        console.log("Threat Level Response:", threatResponse);
+    
+        // Check for errors in the response
+        if (threatError || !threatResponse) {
+          console.log("Threat Level Error:", threatError);
+          console.error("Error invoking calc-threat-level:", threatError || "No response data");
+          throw new Error("Error calculating threat level");
+        }
+    
+        // Ensure threatResponse is a valid number
+        const threatLevel = parseFloat(threatResponse);
+        if (isNaN(threatLevel)) {
+          throw new Error(`Invalid threat level returned: ${threatResponse}`);
+        }
+        console.log("Threat Level Response:", threatResponse);
+        // Insert the incident into the database
+        account = await getUsername();
+        const { data, error } = await supabase.from('incidents').insert([
+          { time, date, description, threat_level: threatLevel, lat, long, account}
+        ]);
+        if (error) {
+          console.error("Error inserting incident:", error);
+          throw new Error("Database insertion failed");
+        }
+    
+        return "database insertion successful";
+      } catch (error) {
+        console.error("insertIncident Error:", error.message);
+        throw error;
+      }
     }
+    
   }
   
   export default Database;
