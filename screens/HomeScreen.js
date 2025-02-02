@@ -30,9 +30,8 @@ export default function HomeScreen() {
   const [followUser, setFollowUser] = useState(false);
   const [userName, setUserName] = React.useState('');
   const [isDialogVisible, setIsDialogVisible] = useState(false);
-  
-
-
+  const [steps, setSteps] = useState([]);
+  const [stepsModalVisible, setStepsModalVisible] = useState(false);
 
 
   const presetReports = [
@@ -156,6 +155,15 @@ export default function HomeScreen() {
     }
   }
 
+  useEffect(() => {
+    console.log("Updated steps in HomeScreen:", steps);
+  }, [steps]);
+  
+  useEffect(() => {
+    if (steps.length > 0) {
+      setStepsModalVisible(true); // Show modal when steps are received
+    }
+  }, [steps]);
 
 
   return (
@@ -164,6 +172,23 @@ export default function HomeScreen() {
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : location ? (
         <>
+           {steps.length > 0 && (
+            <FlatList
+              data={steps}
+              horizontal
+              pagingEnabled
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.bannerItem}>
+                  <Text style={styles.instructionText}>
+                    {item.maneuver ? item.maneuver.instruction : "No instruction"}
+                  </Text>
+                </View>
+              )}
+              style={styles.bannerContainer}
+            />
+          )}
+
           <Mapbox.MapView style={styles.map}>
             <Mapbox.Camera
               zoomLevel={14}
@@ -199,6 +224,27 @@ export default function HomeScreen() {
               </Mapbox.ShapeSource>
             )}
           </Mapbox.MapView>
+
+           {/* Steps Modal */}
+           <Modal animationType="slide" transparent={true} visible={stepsModalVisible}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Turn-by-Turn Directions</Text>
+                <FlatList
+                  data={steps}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => (
+                    <View style={styles.stepItem}>
+                      <Text style={styles.stepText}>{item.maneuver?.instruction || "No instruction"}</Text>
+                    </View>
+                  )}
+                />
+                <TouchableOpacity style={styles.closeButton} onPress={() => setStepsModalVisible(false)}>
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
 
 
 
@@ -243,7 +289,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          <Bottomcomp location={location} setRoute={setRoute} />
+          <Bottomcomp location={location} setRoute={setRoute} setSteps={setSteps} />
 
           
 
@@ -319,13 +365,18 @@ const styles = StyleSheet.create({
     padding: 15, 
     borderRadius: 100
   },
-
-
-
   text: { 
     textAlign: 'center', 
     marginTop: 20, 
     fontSize: 16 
+  },
+  bannerContainer: {
+    position: 'absolute',
+    top: 50,
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 10,
+  
   },
 
   buttonText: { 
