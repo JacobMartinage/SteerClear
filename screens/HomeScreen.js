@@ -8,8 +8,8 @@ import Database from "../utils/database";
 import { supabase } from "../lib/supabase";
 import Bottomcomp from '../components/bottom_sheet';
 import { fetchHeatmapData, convertToGeoJSON, getHeatmapStyle, updateHeatmap } from '../components/heatmap';
-import {sendPasswordReset, deleteAccount} from '../utils/auth'
 import DialogInput from 'react-native-dialog-input';
+import OptionsModal from '../components/settings_modal';
 
 
 //set token
@@ -28,6 +28,7 @@ export default function HomeScreen() {
   const [followUser, setFollowUser] = useState(false);
   const [userName, setUserName] = React.useState('');
   const [isDialogVisible, setIsDialogVisible] = useState(false);
+  
 
 
 
@@ -245,60 +246,6 @@ export default function HomeScreen() {
     Alert.alert("SOS Activated", "Emergency services or contacts will be notified!");
   }
 
-
-
-
-  const handleUserName = () => {
-    setIsDialogVisible(true);
-    console.log(isDialogVisible)
-};
-
-
-  const handlePasswordReset = () => {
-    Alert.alert(
-      'Password Reset',
-      'Are you sure you want to reset you password?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Deletion cancelled'),
-          style: 'cancel',
-        },
-        {
-          text: 'OK',
-          onPress: () => sendPasswordReset(),
-        },
-      ],
-      { cancelable: false }
-    );
-  };
-
-  const handleDeletePress = () => {
-    Alert.alert(
-      'Confirm Deletion',
-      'Are you sure you want to delete your account?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Deletion cancelled'),
-          style: 'cancel',
-        },
-        {
-          text: 'OK',
-          onPress: () => {
-            logOutAccount();
-            deleteAccount();
-          }
-        },
-      ],
-      { cancelable: false }
-    );
-  };
-  
-
-
-
-
   return (
     <View style={{ flex: 1 }}>
       {loading ? (
@@ -334,6 +281,10 @@ export default function HomeScreen() {
               </Mapbox.ShapeSource>
             )}
           </Mapbox.MapView>
+
+
+          <OptionsModal visible={optionsModal} onClose={() => setOptionsModal(false)} logOutAccount={logOutAccount} />
+
 
 
 
@@ -430,37 +381,6 @@ export default function HomeScreen() {
             </View>
           </Modal>
 
-          {/* Options Modal */}
-          <Modal visible={optionsModal} animationType="slide" transparent>
-              <View style={styles.optionsModalCont}>
-                {/* Close Button can remain absolute if you prefer */}
-                <TouchableOpacity style = {{position: 'absolute', top: 40, right: 20,}} onPress={() => setOptionsModal(false)}>
-                  <Ionicons name="close" size={24} color="black" />
-                </TouchableOpacity>
-
-                {/* Centered Logout Button */}
-                <TouchableOpacity onPress={logOutAccount}>
-                  <Text style={styles.placeho}>Log Out</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={handlePasswordReset}>
-                  <Text style={styles.placeho}>Group Walk</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={handleUserName}>
-                  <Text style={styles.placeho}>Edit Username</Text>
-                </TouchableOpacity>
-
-
-                <TouchableOpacity onPress={handlePasswordReset}>
-                  <Text style={styles.placeho}>Password Reset</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={handleDeletePress}>
-                  <Text style={styles.placeho}>Delete Account</Text>
-                </TouchableOpacity>
-              </View>
-            </Modal>
 
         </>
       ) : (
@@ -654,4 +574,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold' 
   }
 });
-
