@@ -11,6 +11,7 @@ import { fetchHeatmapData, convertToGeoJSON, getHeatmapStyle, updateHeatmap } fr
 import DialogInput from 'react-native-dialog-input';
 import OptionsModal from '../components/settings_modal';
 import ReportModal from '../components/reports_modal';
+import SafetyModal from '../components/safety_modal';
 
 
 //set token
@@ -130,6 +131,10 @@ export default function HomeScreen() {
     }
   }
 
+  function triggerSOS() {
+    Alert.alert('SOS Activated', 'Emergency services or contacts will be notified!');
+  }
+
   async function getDirections(destinationCoords) {
     if (!location) {
       Alert.alert("Current location not available");
@@ -151,58 +156,7 @@ export default function HomeScreen() {
     }
   }
 
-  
 
-  async function submiteSafeReport(report) {
-    if (!report) {
-      Alert.alert("Error", "Please enter or select a report.");
-      return;
-    }
-  
-    //get current time & date
-    const now = new Date();
-    const time = now.toISOString().split('T')[1].split('.')[0];
-    const date = now.toISOString().split('T')[0]; 
-    console.log(time)
-    console.log(date)
-  
-    //get current user
-    const { data: user, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      Alert.alert("Error", "Unable to get user information.");
-      return;
-    }
-  
-    //check location
-    if (!location) {
-      Alert.alert("Error", "Location not available.");
-      return;
-    }
-  
-    //insert into Supabase
-    const response = await Database.insertSafetyRecord(
-      time, 
-      date, 
-      report, 
-      location.latitude, 
-      location.longitude, 
-      user.email
-    );
-  
-    if (response) {
-      Alert.alert("Report Submitted", `You reported: ${report}`);
-    } else {
-      Alert.alert("Error", "Failed to submit the report.");
-    }
-  
-    //close modal
-    setSafeModalVisible(false);
-    setCustomReport('');
-  }
-
-  function triggerSOS() {
-    Alert.alert("SOS Activated", "Emergency services or contacts will be notified!");
-  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -249,8 +203,13 @@ export default function HomeScreen() {
           visible={reportModalVisible} 
           onClose={() => setReportModalVisible(false)} 
           location={location} 
-           presetReports={presetReports} 
-/>
+           presetReports={presetReports} />
+
+            <SafetyModal 
+              visible={safeModalVisible} 
+              onClose={() => setSafeModalVisible(false)} 
+              location={location} 
+              presetSafety={presetSafety}/>
 
 
 
@@ -282,40 +241,6 @@ export default function HomeScreen() {
 
           
 
-          {/* Safety Modal */}
-          <Modal visible={safeModalVisible} animationType="slide" transparent>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <TouchableOpacity style={styles.closeButton} onPress={() => setSafeModalVisible(false)}>
-                  <Ionicons name="close" size={24} color="black" />
-                </TouchableOpacity>
-
-                <Text style={styles.modalTitle}>Why is this safe?</Text>
-
-                <FlatList
-                  data={presetSafety}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.reportOption} onPress={() => submiteSafeReport(item)}>
-                      <Text style={styles.reportText}>{item}</Text>
-                    </TouchableOpacity>
-                  )}
-                  keyExtractor={(item) => item}
-                />
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="How safe is it"
-                  value={customReport}
-                  onChangeText={setCustomReport}
-                />
-
-                <TouchableOpacity style={styles.submitButton} onPress={() => submiteSafeReport(customReport)}>
-                  <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
-
 
         </>
       ) : (
@@ -328,9 +253,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
 
   loader: { flex: 1 },
-
-  placeho: {padding: 10, fontSize: 30,  color: 'black', fontWeight: 'bold', borderRadius: 50, backgroundColor: 'blue',marginBottom: 10  },
-
 
   map: {  ...StyleSheet.absoluteFillObject, 
 
@@ -358,32 +280,13 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 50,
   },
-  logoutButton: { 
-  },
 
-  optionsModalCont: {
-    flex: 1,
-    backgroundColor: 'gray',
-    padding: 20,
-    justifyContent: 'center',
-  alignItems: 'center',
-
-  },
-
-  
   optionsbutton: { 
     position: 'absolute',
     backgroundColor: 'gray', 
     padding: 10, 
     borderRadius: 50,
     marginRight: 10,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    padding: 5,
-    zIndex: 10,
   },
   safeButton: { 
     position: 'absolute',
@@ -411,40 +314,7 @@ const styles = StyleSheet.create({
     borderRadius: 100
   },
 
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    padding: 5,
-    zIndex: 10,
-  },
 
-  searchContainer: { 
-    
-    position: 'absolute', 
-    top: 40, 
-    left: 20, 
-    right: 80, 
-    flexDirection: 'row', 
-    backgroundColor: 'white', 
-    borderRadius: 8, 
-    padding: 10, 
-    alignItems: 'center',
-    elevation: 5 
-  },
-
-  searchInput: { 
-    flex: 1, 
-    height: 40, 
-    fontSize: 16, 
-    paddingHorizontal: 10 
-  },
-
-  searchButton: { 
-    backgroundColor: '#007bff', 
-    padding: 10, 
-    borderRadius: 5 
-  },
 
   text: { 
     textAlign: 'center', 
@@ -452,58 +322,6 @@ const styles = StyleSheet.create({
     fontSize: 16 
   },
 
-
-  modalContainer: { 
-    bottom: 125, 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: 'rgba(0,0,0,0)' 
-  },
-
-  modalContent: { 
-    width: '80%', 
-    backgroundColor: 'white', 
-    padding: 20, 
-    borderRadius: 10, 
-    alignItems: 'center' 
-  },
-
-  modalTitle: { 
-    fontSize: 20, 
-    fontWeight: 'bold', 
-    marginBottom: 15 
-  },
-
-  reportOption: { 
-    width: '100%', 
-    padding: 10, 
-    backgroundColor: '#f0f0f0', 
-    marginVertical: 5, 
-    borderRadius: 5, 
-    alignItems: 'center' 
-  },
-
-  reportText: { 
-    fontSize: 16 
-  },
-
-  input: { 
-    width: '100%', 
-    padding: 10, 
-    borderWidth: 1, 
-    borderColor: '#ccc', 
-    borderRadius: 5, 
-    marginVertical: 10 
-  },
-
-  submitButton: { 
-    backgroundColor: '#007bff', 
-    padding: 10, 
-    borderRadius: 5, 
-    alignItems: 'center', 
-    width: '100%' 
-  },
   buttonText: { 
     color: 'white', 
     fontWeight: 'bold' 
