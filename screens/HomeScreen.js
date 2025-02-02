@@ -165,14 +165,14 @@ export default function HomeScreen() {
       ) : location ? (
         <>
           <Mapbox.MapView style={styles.map}>
-          <Mapbox.Camera
-            zoomLevel={14}
-            centerCoordinate={[location.longitude, location.latitude]}
-            followUserLocation={followUser} //allows use of recenter button
-            followUserMode="normal"
-            animationMode="easeTo"
-            animationDuration={1000}
-          />
+            <Mapbox.Camera
+              zoomLevel={14}
+              centerCoordinate={[location.longitude, location.latitude]}
+              followUserLocation={followUser} //allows use of recenter button
+              followUserMode="normal"
+              animationMode="easeTo"
+              animationDuration={1000}
+            />
 
 
             <Mapbox.PointAnnotation id="userLocation" coordinate={[location.longitude, location.latitude]}>
@@ -188,8 +188,14 @@ export default function HomeScreen() {
               </Mapbox.ShapeSource>
             )}
             {route && (
-              <Mapbox.ShapeSource id="routeSource" shape={{ type: 'LineString', coordinates: route.coordinates }}>
-                <Mapbox.LineLayer id="routeLayer" style={{ lineColor: 'blue', lineWidth: 5 }} />
+              <Mapbox.ShapeSource
+                id="routeSource"
+                shape={{ type: 'LineString', coordinates: route.coordinates }}
+              >
+                <Mapbox.LineLayer
+                  id="routeLayer"
+                  style={{ lineColor: 'blue', lineWidth: 5 }}
+                />
               </Mapbox.ShapeSource>
             )}
           </Mapbox.MapView>
