@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, ActivityIndicator, Alert, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList } from 'react-native';
 import Mapbox from '@rnmapbox/maps';
 import * as Location from 'expo-location';
@@ -12,8 +12,8 @@ import { fetchHeatmapData, convertToGeoJSON, getHeatmapStyle, updateHeatmap } fr
 //set token
 Mapbox.setAccessToken('sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg');
 
-
 export default function HomeScreen() {
+  const camera = React.useRef(null);
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [destination, setDestination] = useState('');
@@ -21,6 +21,8 @@ export default function HomeScreen() {
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [customReport, setCustomReport] = useState('');
   const [safeModalVisible, setSafeModalVisible] = useState(false);
+  const [followUser, setFollowUser] = useState(false);
+
 
   const presetReports = [
     "I Felt Unsafe",
@@ -84,8 +86,18 @@ export default function HomeScreen() {
       }
     };
   }, []);
-  
 
+  function recenterOnUser() {
+    console.log("Recenter pressed", location);
+    if (location) {
+      setFollowUser(true);
+      setTimeout(() => setFollowUser(false), 2000);
+    } else {
+      console.log("Missing location:", location);
+    }
+  }
+  
+  
   async function fetchDestinationCoordinates() {
     if (!destination) {
       Alert.alert("Enter a location");
@@ -176,7 +188,6 @@ export default function HomeScreen() {
 
   async function submiteSafeReport(report) {
     if (!report) {
-      
       Alert.alert("Error", "Please enter or select a report.");
       return;
     }
@@ -222,30 +233,27 @@ export default function HomeScreen() {
     setCustomReport('');
   }
 
-
   function triggerSOS() {
     Alert.alert("SOS Activated", "Emergency services or contacts will be notified!");
   }
 
   return (
-
     <View style={{ flex: 1 }}>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : location ? (
         <>
-
-
           <Mapbox.MapView style={styles.map}>
+          <Mapbox.Camera
+            zoomLevel={14}
+            centerCoordinate={[location.longitude, location.latitude]}
+            followUserLocation={followUser} //allows use of recenter button
+            followUserMode="normal"
+            animationMode="easeTo"
+            animationDuration={1000}
+          />
 
-            <Mapbox.Camera
-                zoomLevel={14}
-                centerCoordinate={[location.longitude, location.latitude]} // Default to SF if location isn't available
-                followUserLocation={true} // Ensures the map follows user
-                followUserMode="normal" // Keeps tracking the user
-                animationMode="easeTo"
-                animationDuration={1000}
-              />
+
             <Mapbox.PointAnnotation id="userLocation" coordinate={[location.longitude, location.latitude]}>
               <View style={styles.marker} />
             </Mapbox.PointAnnotation>
@@ -263,47 +271,36 @@ export default function HomeScreen() {
                 <Mapbox.LineLayer id="routeLayer" style={{ lineColor: 'blue', lineWidth: 5 }} />
               </Mapbox.ShapeSource>
             )}
-
           </Mapbox.MapView>
 
-          {/* Add Bottomcomp here */}
-          
+          <View style={styles.finalflex}>
+            <TouchableOpacity style={styles.recenterButton} onPress={recenterOnUser}>
+              <Ionicons name="locate" size={24} color="white" />
+            </TouchableOpacity>
 
-          <View style = {styles.finalflex}>
-
-          <TouchableOpacity style={styles.sosButton} onLongPress={triggerSOS}>
-              <Text style = {styles.sosText}>SOS</Text>
-              </TouchableOpacity>
-
+            <TouchableOpacity style={styles.sosButton} onLongPress={triggerSOS}>
+              <Text style={styles.sosText}>SOS</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.reportButton} onPress={() => setReportModalVisible(true)}>
               <Ionicons name="alert-circle-outline" size={24} color="white" />
             </TouchableOpacity>
 
-
-
             <TouchableOpacity style={styles.safeButton} onPress={() => setSafeModalVisible(true)}>
               <Ionicons name="lock-closed" size={24} color="white" />
             </TouchableOpacity>
 
-
             <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}>
               <Ionicons name="log-out-outline" size={20} color="white" />
             </TouchableOpacity>
-
           </View>
-         
 
-          <Bottomcomp location={location} setRoute={setRoute} /> 
-
-
+          <Bottomcomp location={location} setRoute={setRoute} />
 
           {/* Report Modal */}
           <Modal visible={reportModalVisible} animationType="slide" transparent>
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
-                
-                {/* Close Button */}
                 <TouchableOpacity style={styles.closeButton} onPress={() => setReportModalVisible(false)}>
                   <Ionicons name="close" size={24} color="black" />
                 </TouchableOpacity>
@@ -330,22 +327,17 @@ export default function HomeScreen() {
                 <TouchableOpacity style={styles.submitButton} onPress={() => submitReport(customReport)}>
                   <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>
-                
               </View>
             </View>
           </Modal>
 
-          {/* safety modal */}
+          {/* Safety Modal */}
           <Modal visible={safeModalVisible} animationType="slide" transparent>
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
-                
-                {/* Close Button */}
                 <TouchableOpacity style={styles.closeButton} onPress={() => setSafeModalVisible(false)}>
                   <Ionicons name="close" size={24} color="black" />
                 </TouchableOpacity>
-
-
 
                 <Text style={styles.modalTitle}>Why is this safe?</Text>
 
@@ -369,7 +361,6 @@ export default function HomeScreen() {
                 <TouchableOpacity style={styles.submitButton} onPress={() => submiteSafeReport(customReport)}>
                   <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>
-                
               </View>
             </View>
           </Modal>
@@ -380,14 +371,14 @@ export default function HomeScreen() {
     </View>
   );
 }
-//css pain
+
 const styles = StyleSheet.create({
-  loader: { flex: 1 },
-
-  map: {  ...StyleSheet.absoluteFillObject, 
-
-   },
-
+  loader: { 
+    flex: 1 
+  },
+  map: {  
+    ...StyleSheet.absoluteFillObject
+  },
   marker: { 
     height: 20, 
     width: 20, 
@@ -401,18 +392,22 @@ const styles = StyleSheet.create({
     marginTop: 100,
     marginLeft: 10,
     marginRight: 10,
-
   },
-  
+  recenterButton: { 
+    position: 'absolute',
+    top: 40,
+    right: 10,
+    backgroundColor: '#4287f5',
+    padding: 15,
+    borderRadius: 50,
+  },
   logoutButton: { 
     position: 'absolute',
     backgroundColor: 'red', 
     padding: 10, 
     borderRadius: 50,
     marginRight: 10,
-
   },
-
   closeButton: {
     position: 'absolute',
     top: 10,
@@ -422,22 +417,20 @@ const styles = StyleSheet.create({
   },
   safeButton: { 
     position: 'absolute',
-    top:100,
-    right:10,
+    top: 100,
+    right: 10,
     backgroundColor: 'blue', 
     padding: 15, 
     borderRadius: 50,
   },
-
   reportButton: { 
     position: 'absolute',
-    top:160,
-    right:10,
+    top: 160,
+    right: 10,
     backgroundColor: '#ff6347', 
     padding: 15, 
     borderRadius: 50 
   },
-  
 
   sosButton: { 
     position: 'absolute',
