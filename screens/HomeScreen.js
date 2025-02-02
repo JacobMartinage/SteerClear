@@ -33,8 +33,6 @@ export default function HomeScreen() {
   
 
 
-
-
   const presetReports = [
     "I Felt Unsafe",
     "Suspicious Activity",
@@ -157,7 +155,6 @@ export default function HomeScreen() {
   }
 
 
-
   return (
     <View style={{ flex: 1 }}>
       {loading ? (
@@ -201,7 +198,6 @@ export default function HomeScreen() {
           </Mapbox.MapView>
 
 
-
           {/* Modals */}
           <OptionsModal visible={optionsModal} onClose={() => setOptionsModal(false)} logOutAccount={logOutAccount} />
 
@@ -216,9 +212,6 @@ export default function HomeScreen() {
               onClose={() => setSafeModalVisible(false)} 
               location={location} 
               presetSafety={presetSafety}/>
-
-
-
 
 
           <View style={styles.finalflex}>
@@ -245,8 +238,6 @@ export default function HomeScreen() {
 
           <Bottomcomp location={location} setRoute={setRoute} />
 
-          
-
 
         </>
       ) : (
@@ -259,11 +250,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
 
   loader: { flex: 1 },
-
   map: {  ...StyleSheet.absoluteFillObject, 
-
    },
-
   marker: { 
     height: 20, 
     width: 20, 
@@ -310,7 +298,6 @@ const styles = StyleSheet.create({
     padding: 15, 
     borderRadius: 50 
   },
-
   sosButton: { 
     position: 'absolute',
     top:220,
@@ -319,9 +306,6 @@ const styles = StyleSheet.create({
     padding: 15, 
     borderRadius: 100
   },
-
-
-
   text: { 
     textAlign: 'center', 
     marginTop: 20, 

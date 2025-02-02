@@ -11,7 +11,7 @@ const ReportModal = ({ visible, onClose, location, presetReports }) => {
       Alert.alert('Error', 'Please enter or select a report.');
       return;
     }
-
+    
     const now = new Date();
     const time = now.toLocaleTimeString();
     const date = now.toISOString().split('T')[0];
