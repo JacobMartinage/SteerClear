@@ -188,26 +188,6 @@ const sendText = async () => {
     Alert.alert('SOS Activated', 'Emergency services or contacts will be notified!');
   }
 
-  async function getDirections(destinationCoords) {
-    if (!location) {
-      Alert.alert("Current location not available");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/walking/${location.longitude},${location.latitude};${destinationCoords[0]},${destinationCoords[1]}?geometries=geojson&access_token=sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg`
-      );
-      const data = await response.json();
-      if (!data.routes || data.routes.length === 0) {
-        Alert.alert("No route found");
-        return;
-      }
-      setRoute(data.routes[0].geometry);
-    } catch (error) {
-      Alert.alert("Error fetching directions", error.message);
-    }
-  }
 
   useEffect(() => {
     console.log("Updated steps in HomeScreen:", steps);
