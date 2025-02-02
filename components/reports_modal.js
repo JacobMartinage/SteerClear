@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, FlatList, TextInput, StyleSheet, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../lib/supabase';
+import Database from '../utils/database';
 
 const ReportModal = ({ visible, onClose, location, presetReports }) => {
   const [customReport, setCustomReport] = useState('');
@@ -13,7 +14,7 @@ const ReportModal = ({ visible, onClose, location, presetReports }) => {
     }
     
     const now = new Date();
-    const time = now.toLocaleTimeString();
+    const time = now.toISOString().split('T')[1].split('.')[0];
     const date = now.toISOString().split('T')[0];
 
     const { data: user, error: userError } = await supabase.auth.getUser();
@@ -27,6 +28,8 @@ const ReportModal = ({ visible, onClose, location, presetReports }) => {
       return;
     }
 
+
+
     const response = await Database.insertIncident(
       time,
       date,
@@ -35,6 +38,9 @@ const ReportModal = ({ visible, onClose, location, presetReports }) => {
       location.longitude,
       user.email
     );
+
+    console.log("aaaa")
+
 
     if (response) {
       Alert.alert('Report Submitted', `You reported: ${report}`);

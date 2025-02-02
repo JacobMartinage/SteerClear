@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, FlatList, TextInput, StyleSheet, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../lib/supabase';
+import Database from '../utils/database';
 
 const SafetyModal = ({ visible, onClose, location, presetSafety }) => {
   const [customReport, setCustomReport] = useState('');
