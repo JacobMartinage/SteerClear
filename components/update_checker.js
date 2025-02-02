@@ -3,14 +3,7 @@ import { View, Button, Alert } from 'react-native';
 import * as Updates from 'expo-updates';
 
 
-const UpdateChecler = ({ }) => {
-
-  useEffect(() => {
-    // Check for updates on app mount
-    checkForUpdates();
-  }, []);
-
-  const checkForUpdates = async () => {
+    export const checkForUpdates = async () => {
     try {
       const update = await Updates.checkForUpdateAsync();
 
@@ -37,8 +30,3 @@ const UpdateChecler = ({ }) => {
     }
   };
 
-  return (
-      {/* Your app content here */}
-      <Button title="Check for Updates" onPress={checkForUpdates} />
-  );
-};
