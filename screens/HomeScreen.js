@@ -266,6 +266,8 @@ export default function HomeScreen() {
 
           </Mapbox.MapView>
 
+          {/* Add Bottomcomp here */}
+          
 
           <View style = {styles.finalflex}>
 
@@ -290,17 +292,13 @@ export default function HomeScreen() {
             </TouchableOpacity>
 
           </View>
-
-          
-
-          <Bottomcomp/>
          
 
+          <Bottomcomp location={location} setRoute={setRoute} /> 
 
 
 
-
-          {/* ✅ Report Modal */}
+          {/* Report Modal */}
           <Modal visible={reportModalVisible} animationType="slide" transparent>
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
