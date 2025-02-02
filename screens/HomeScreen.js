@@ -23,11 +23,12 @@ export default function HomeScreen() {
   const [safeModalVisible, setSafeModalVisible] = useState(false);
 
   const presetReports = [
-    "I felt unsafe",
+    "I Felt Unsafe",
     "Suspicious Activity",
     "Violent Crime witnessed",
     "Theft or Robbery",
     "Harassment",
+    "Low Light Level",
   ];
 
   //heatmap state
@@ -474,6 +475,7 @@ const styles = StyleSheet.create({
 
 
   modalContainer: { 
+    bottom: 125, 
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center', 
