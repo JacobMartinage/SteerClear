@@ -1,0 +1,39 @@
+import React from "react";
+import { TouchableOpacity, Text, Alert } from "react-native";
+import { Linking } from "react-native";
+
+const CallButton = ({ phoneNumber }) => {
+  const makeCall = () => {
+    if (!phoneNumber) {
+      Alert.alert("Error", "Phone number is missing.");
+      return;
+    }
+
+    const url = `tel:${phoneNumber}`;
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (supported) {
+          Linking.openURL(url);
+        } else {
+          Alert.alert("Error", "Calling is not supported on this device.");
+        }
+      })
+      .catch((err) => console.error("Error opening dialer:", err));
+  };
+
+  return (
+    <TouchableOpacity
+      onPress={makeCall}
+      style={{
+        backgroundColor: "#007AFF",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+      }}
+    >
+      <Text style={{ color: "white", fontSize: 16 }}>Call {phoneNumber}</Text>
+    </TouchableOpacity>
+  );
+};
+
+export default CallButton;
