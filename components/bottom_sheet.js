@@ -1,23 +1,14 @@
 import 'react-native-get-random-values';
 import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
-import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetView, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { GOOGLE_PLACES_API_KEY } from '@env';
-import { Keyboard, Pressable } from 'react-native';
-import { getDirections } from '../utils/routing'; 
+import { getDirections } from '../utils/routing';
 
-const api_key = GOOGLE_PLACES_API_KEY;
-const MAPBOX_ACCESS_TOKEN = 'sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg';
-
-const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute, setSteps }) => {
+const Bottomcomp = ({ location, setRoute, setSteps }) => {
   const bottomSheetModalRef = useRef(null);
   const [destination, setDestination] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
@@ -57,26 +48,20 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute, setSteps
 
     try {
       const geoResponse = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(destination)}&key=${api_key}`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(destination)}&key=${GOOGLE_PLACES_API_KEY}`
       );
       const geoData = await geoResponse.json();
       if (!geoData.results || geoData.results.length === 0) {
         Alert.alert('Location not found');
         return;
       }
-      
+
       const { lat, lng } = geoData.results[0].geometry.location;
-      await getDirections(
-        userLocation || location,
-        [lng, lat],
-        setRoute
-      );
+      await getDirections(userLocation || location, [lng, lat], setRoute, setSteps);
     } catch (error) {
       Alert.alert('Error fetching location', error.message);
     }
   };
-
-
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -94,19 +79,13 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute, setSteps
               <GooglePlacesAutocomplete
                 placeholder="Search"
                 query={{
-                  key: api_key,
+                  key: GOOGLE_PLACES_API_KEY,
                   language: 'en',
                 }}
                 fetchDetails={true}
                 onPress={(data, details = null) => {
                   if (details && details.geometry && details.geometry.location) {
-                    const formattedAddress = details.formatted_address;
-                    setDestination(formattedAddress);
-                    onAddressSelected({
-                      lat: details.geometry.location.lat,
-                      lng: details.geometry.location.lng,
-                      name: formattedAddress,
-                    });
+                    setDestination(details.formatted_address);
                   } else {
                     Alert.alert('Error', 'Location details not available');
                   }
@@ -124,62 +103,61 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute, setSteps
         </BottomSheetModal>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
-
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 24,
-      justifyContent: 'center',
-    },
-    contentContainer: {
-      alignItems: 'center',
-      flex: 1,
-      backgroundColor: 'transparent',
-    },
-    autocompleteContainer: {
-      flex: 1,
-      padding: 10,
-      backgroundColor: '#ecf0f1',
-      width: '100%',
-    },
-    floatingButton: {
-      position: 'absolute',
-      bottom: 50,
-      alignSelf: 'center',
-      backgroundColor: '#007bff',
-      paddingVertical: 12,
-      paddingHorizontal: 20,
-      borderRadius: 25,
-      elevation: 5,
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-  });
-  
-  const googlePlacesStyles = {
-    textInputContainer: {
-      width: '100%',
-      backgroundColor: 'white',
-      borderRadius: 5,
-    },
-    textInput: {
-      height: 40,
-      borderRadius: 5,
-      fontSize: 16,
-      paddingHorizontal: 10,
-      backgroundColor: 'rgba(255, 255, 255, 1)',
-    },
-    listView: {
-      width: '100%',
-      maxHeight: '20%',
-      flexGrow: 1,
-    },
-  };
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
+  },
+  contentContainer: {
+    alignItems: 'center',
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  autocompleteContainer: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#ecf0f1',
+    width: '100%',
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 50,
+    alignSelf: 'center',
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    elevation: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+
+const googlePlacesStyles = {
+  textInputContainer: {
+    width: '100%',
+    backgroundColor: 'white',
+    borderRadius: 5,
+  },
+  textInput: {
+    height: 40,
+    borderRadius: 5,
+    fontSize: 16,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+  },
+  listView: {
+    width: '100%',
+    maxHeight: '20%',
+    flexGrow: 1,
+  },
+};
 
 export default Bottomcomp;
