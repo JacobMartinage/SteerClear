@@ -1,54 +1,45 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetModalProvider,
+  BottomSheetTextInput,
 } from '@gorhom/bottom-sheet';
 
 const HomeScreen = () => {
-  // ref
   const bottomSheetModalRef = useRef(null);
 
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
+  const handlePresentModal = useCallback(() => {
     if (bottomSheetModalRef.current) {
       bottomSheetModalRef.current.present();
-    } else {
-      console.log('BottomSheetModal ref is not attached.');
     }
   }, []);
-  
-  const handleSheetChanges = useCallback((index) => {
-    console.log('handleSheetChanges', index);
-  }, []);
+
+  useEffect(() => {
+    handlePresentModal();
+  }, [handlePresentModal]);
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <BottomSheetModalProvider>
-        <View style={styles.innerContainer}>
-          <Button
-            onPress={handlePresentModalPress}
-            title="Present Modal"
-            color="black"
-          />
-        </View>
         <BottomSheetModal
-          ref={bottomSheetModalRef} // ✅ Corrected ref usage
-          snapPoints={['20%', '60%']} // ✅ Snap points are fine
-          onChange={handleSheetChanges}
-          index={1}
+          ref={bottomSheetModalRef}
+          snapPoints={['20%', '60%']}
+          index={0}
+          enableDismissOnClose={false}
+          enablePanDownToClose = {false}
+          topInset={100}
         >
           <BottomSheetView style={styles.contentContainer}>
-            <Text>Awesome 🎉</Text>
+          <BottomSheetTextInput style={styles.input} placeholder='search' />
           </BottomSheetView>
         </BottomSheetModal>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -64,7 +55,16 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    minHeight: '20%', 
+  },
+  input: {
+    width: '90%', 
+    padding: 10, 
+    borderRadius: 10,
+    fontSize: 16,
+    lineHeight: 20,
+    backgroundColor: 'rgba(151, 151, 151, 0.25)',
+    overflow: 'hidden', 
   },
 });
 
