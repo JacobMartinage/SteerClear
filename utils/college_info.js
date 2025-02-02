@@ -10,7 +10,7 @@ class CollegeInfo {
 
      // get list of existing active groups
      static async getCollegesNames() {
-        const { data, error } = await supabase.from('colleges').select('*')
+        const { data, error } = await supabase.from('colleges').select('name')
         if (error) console.error('Error fetching groups:', error);
         return data;
     }
