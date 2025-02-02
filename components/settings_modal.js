@@ -5,6 +5,7 @@ import DialogInput from 'react-native-dialog-input';
 import { sendPasswordReset, deleteAccount, addUsername } from '../utils/auth';
 import GroupWalk from '../utils/group_walk'; 
 import * as Location from 'expo-location';
+import { checkForUpdates } from './update_checker';
 
 const OptionsModal = ({ visible, onClose, logOutAccount }) => {
   // Username editing state
@@ -30,6 +31,7 @@ const OptionsModal = ({ visible, onClose, logOutAccount }) => {
     };
     fetchUserLocation();
   }, []);
+
 
   // 2) Reference userLocation in your event handler
   const handleCreateGroup = async () => {
@@ -105,7 +107,7 @@ const OptionsModal = ({ visible, onClose, logOutAccount }) => {
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.optionsModalCont}>
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Ionicons name="close" size={24} color="black" />
+          <Ionicons name="close" size={30} color="white" />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={logOutAccount}>
@@ -149,23 +151,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   closeButton: {
     position: 'absolute',
+    color: 'white',
     top: 40,
     right: 20,
   },
   optionText: {
     padding: 10,
-    fontSize: 18,
+    fontSize: 24,
     color: 'white',
     fontWeight: 'bold',
     borderRadius: 10,
     backgroundColor: 'blue',
-    marginBottom: 10,
+    marginBottom: 25,
     textAlign: 'center',
-    width: 200,
+    width: 225,
   },
 });
 
