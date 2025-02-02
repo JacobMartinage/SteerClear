@@ -386,7 +386,7 @@ export default function HomeScreen() {
                 {/* Centered Logout Button */}
                 <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}
                 >
-                  <Text style={{ position: 'absolute', top: 50, right:125, color: 'black', fontWeight: 'bold', border: 50, backgroundColor: 'white' }}>Log Out</Text>
+                  <Text style={{padding: 10, fontSize: 30, position: 'absolute', top: 50, right:125, color: 'black', fontWeight: 'bold', borderRadius: 50, backgroundColor: 'white' }}>Log Out</Text>
                 </TouchableOpacity>
               </View>
             </Modal>
