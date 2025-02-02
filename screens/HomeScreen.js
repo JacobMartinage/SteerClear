@@ -30,6 +30,12 @@ export default function HomeScreen() {
     "Harassment",
     "Low Light Level",
   ];
+  const presetSafety = [
+    "Blue Lights",
+    "Police",
+    "Fire Department",
+    "College Buildings",
+  ];
 
   //heatmap state
   const [geojson, setGeojson] = useState(null);
@@ -341,7 +347,19 @@ export default function HomeScreen() {
                   <Ionicons name="close" size={24} color="black" />
                 </TouchableOpacity>
 
+
+
                 <Text style={styles.modalTitle}>Why is this safe?</Text>
+
+                <FlatList
+                  data={presetSafety}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity style={styles.reportOption} onPress={() => submiteSafeReport(item)}>
+                      <Text style={styles.reportText}>{item}</Text>
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={(item) => item}
+                />
 
                 <TextInput
                   style={styles.input}
