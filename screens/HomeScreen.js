@@ -238,6 +238,65 @@ export default function HomeScreen() {
     Alert.alert("SOS Activated", "Emergency services or contacts will be notified!");
   }
 
+
+  const handleDeletePress = () => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete your account?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Deletion cancelled'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => console.log('Account deleted!'),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const handlePasswordReset = () => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete your account?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Deletion cancelled'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => console.log('Account deleted!'),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const handleUserName = () => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete your account?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Deletion cancelled'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => console.log('Account deleted!'),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+
   return (
     <View style={{ flex: 1 }}>
       {loading ? (
@@ -375,10 +434,28 @@ export default function HomeScreen() {
                 </TouchableOpacity>
 
                 {/* Centered Logout Button */}
-                <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}
-                >
-                  <Text style={{padding: 10, fontSize: 30, position: 'absolute', top: 50, right:125, color: 'black', fontWeight: 'bold', borderRadius: 50, backgroundColor: 'white' }}>Log Out</Text>
+                <TouchableOpacity onPress={logOutAccount}>
+                  <Text style={styles.placeho}>Log Out</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity onPress={handlePasswordReset}>
+                  <Text style={styles.placeho}>Group Walk</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={handlePasswordReset}>
+                  <Text style={styles.placeho}>Edit Username</Text>
+                </TouchableOpacity>
+
+
+                <TouchableOpacity onPress={handlePasswordReset}>
+                  <Text style={styles.placeho}>Password Reset</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={handleDeletePress}>
+                  <Text style={styles.placeho}>Delete Account</Text>
+                </TouchableOpacity>
+
+
               </View>
             </Modal>
         </>
@@ -390,12 +467,16 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  loader: { 
-    flex: 1 
-  },
-  map: {  
-    ...StyleSheet.absoluteFillObject
-  },
+
+  loader: { flex: 1 },
+
+  placeho: {padding: 10, fontSize: 30,  color: 'black', fontWeight: 'bold', borderRadius: 50, backgroundColor: 'blue',marginBottom: 10  },
+
+
+  map: {  ...StyleSheet.absoluteFillObject, 
+
+   },
+
   marker: { 
     height: 20, 
     width: 20, 
@@ -425,6 +506,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'gray',
     padding: 20,
+    justifyContent: 'center',
+  alignItems: 'center',
+
   },
 
   
