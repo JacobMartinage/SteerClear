@@ -7,8 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import Database from "../utils/database";
 import { supabase } from "../lib/supabase";
 import Bottomcomp from '../components/bottom_sheet';
+import { fetchHeatmapData, convertToGeoJSON, getHeatmapStyle, updateHeatmap } from '../components/heatmap';
 
-// ✅ Set Mapbox Access Token
+//set token
 Mapbox.setAccessToken('sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg');
 
 
@@ -21,13 +22,21 @@ export default function HomeScreen() {
   const [customReport, setCustomReport] = useState('');
 
   const presetReports = [
-    "Suspicious activity",
-    "Unsafe area",
-    "Crime witnessed",
-    "Police presence",
+    "I felt unsafe",
+    "Suspicious Activity",
+    "Violent Crime witnessed",
+    "Theft or Robbery",
     "Harassment",
   ];
 
+  //heatmap state
+  const [geojson, setGeojson] = useState(null);
+
+  useEffect(() => {
+    updateHeatmap(setGeojson);
+  }, []);
+
+  //get user location
   useEffect(() => {
     const getUserLocation = async () => {
       try {
@@ -100,32 +109,32 @@ export default function HomeScreen() {
       return;
     }
   
-    // Get current time & date
+    //get current time & date
     const now = new Date();
     const time = now.toLocaleTimeString();
-    const date = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const date = now.toISOString().split('T')[0]; 
   
-    // Get current user (assuming you have authentication set up in Supabase)
+    //get current user
     const { data: user, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       Alert.alert("Error", "Unable to get user information.");
       return;
     }
   
-    // Ensure location is available
+    //check location
     if (!location) {
       Alert.alert("Error", "Location not available.");
       return;
     }
   
-    // Insert the incident into Supabase
+    //insert into Supabase
     const response = await Database.insertIncident(
       time, 
       date, 
       report, 
       location.latitude, 
       location.longitude, 
-      user.email // Use user's email or ID from Supabase auth
+      user.email
     );
   
     if (response) {
@@ -134,7 +143,7 @@ export default function HomeScreen() {
       Alert.alert("Error", "Failed to submit the report.");
     }
   
-    // Close the modal and reset input
+    //close modal
     setReportModalVisible(false);
     setCustomReport('');
   }
@@ -163,7 +172,15 @@ export default function HomeScreen() {
             <Mapbox.PointAnnotation id="userLocation" coordinate={[location.longitude, location.latitude]}>
               <View style={styles.marker} />
             </Mapbox.PointAnnotation>
-
+            {geojson && (
+              <Mapbox.ShapeSource id="heatmapSource" shape={geojson}>
+                <Mapbox.HeatmapLayer
+                  id="heatmapLayer"
+                  sourceID="heatmapSource"
+                  style={getHeatmapStyle()}
+                />
+              </Mapbox.ShapeSource>
+            )}
             {route && (
               <Mapbox.ShapeSource id="routeSource" shape={{ type: 'LineString', coordinates: route.coordinates }}>
                 <Mapbox.LineLayer id="routeLayer" style={{ lineColor: 'blue', lineWidth: 5 }} />
@@ -237,7 +254,7 @@ export default function HomeScreen() {
     </View>
   );
 }
-
+//css pain
 const styles = StyleSheet.create({
   loader: { flex: 1 },
 
