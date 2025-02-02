@@ -21,6 +21,7 @@ export default function HomeScreen() {
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [customReport, setCustomReport] = useState('');
   const [safeModalVisible, setSafeModalVisible] = useState(false);
+  const [optionsModal, setOptionsModal] = useState(false);
   const [followUser, setFollowUser] = useState(false);
 
 
@@ -290,8 +291,8 @@ export default function HomeScreen() {
               <Ionicons name="lock-closed" size={24} color="white" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}>
-              <Ionicons name="log-out-outline" size={20} color="white" />
+            <TouchableOpacity style={styles.optionsbutton} onPress={() => setOptionsModal(true)}>
+              <Ionicons name="options" size={20} color="white" />
             </TouchableOpacity>
           </View>
 
@@ -364,6 +365,22 @@ export default function HomeScreen() {
               </View>
             </View>
           </Modal>
+
+          {/* Options Modal */}
+          <Modal visible={optionsModal} animationType="slide" transparent>
+              <View style={styles.optionsModalCont}>
+                {/* Close Button can remain absolute if you prefer */}
+                <TouchableOpacity style = {{position: 'absolute', top: 40, right: 20,}} onPress={() => setOptionsModal(false)}>
+                  <Ionicons name="close" size={24} color="black" />
+                </TouchableOpacity>
+
+                {/* Centered Logout Button */}
+                <TouchableOpacity style={styles.logoutButton} onPress={logOutAccount}
+                >
+                  <Text style={{padding: 10, fontSize: 30, position: 'absolute', top: 50, right:125, color: 'black', fontWeight: 'bold', borderRadius: 50, backgroundColor: 'white' }}>Log Out</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
         </>
       ) : (
         <Text style={styles.text}>No Location Data</Text>
@@ -402,8 +419,17 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   logoutButton: { 
+
+  optionsModalCont: {
+    flex: 1,
+    backgroundColor: 'gray',
+    padding: 20,
+  },
+
+  
+  optionsbutton: { 
     position: 'absolute',
-    backgroundColor: 'red', 
+    backgroundColor: 'gray', 
     padding: 10, 
     borderRadius: 50,
     marginRight: 10,
