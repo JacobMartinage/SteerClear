@@ -12,6 +12,8 @@ const Bottomcomp = ({ location, setRoute, setSteps }) => {
   const bottomSheetModalRef = useRef(null);
   const [destination, setDestination] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [totalDistance, setTotalDistance] = useState(null);
+
 
   useEffect(() => {
     const fetchUserLocation = async () => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, ActivityIndicator, Alert, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList } from 'react-native';
+import { View, Text, ActivityIndicator, Alert, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList, Linking } from 'react-native';
 import Mapbox from '@rnmapbox/maps';
 import * as Location from 'expo-location';
 import { logOutAccount } from '../utils/auth';
@@ -12,6 +12,7 @@ import DialogInput from 'react-native-dialog-input';
 import OptionsModal from '../components/settings_modal';
 import ReportModal from '../components/reports_modal';
 import SafetyModal from '../components/safety_modal';
+
 
 
 //set token
@@ -32,6 +33,7 @@ export default function HomeScreen() {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [steps, setSteps] = useState([]);
   const [stepsModalVisible, setStepsModalVisible] = useState(false);
+  const [emergencyContact, setEmergencyContact] = useState(false)
 
 
   const presetReports = [
@@ -49,12 +51,64 @@ export default function HomeScreen() {
     "College Buildings",
   ];
 
+  async function fetchEmergencyContact() {
+    try {
+        const data = await Database.getEmergencyContact();
+        if (data && data.length > 0) {
+            setEmergencyContact(data);
+        } else {
+            Alert.alert("No contact found", "Please update your emergency contact.");
+        }
+    } catch (error) {
+        console.error("Error fetching emergency contact:", error);
+        Alert.alert("Error", "Failed to retrieve emergency contact.");
+    }
+}
+
+const sendText = async () => {
+  await fetchEmergencyContact(); // Fetch the contact first
+
+  if (emergencyContact && emergencyContact.length > 0) {
+    const phoneNumber = emergencyContact[0].emergency_contact; // Extract the phone number
+    console.log("Sending SMS to:", phoneNumber);
+
+    if (phoneNumber) {
+      const url = `sms:${phoneNumber}`;
+      Linking.openURL(url).catch(() =>
+        Alert.alert("Error", "Could not send the message")
+      );
+    } else {
+      Alert.alert("Error", "No valid emergency contact available");
+    }
+  } else {
+    Alert.alert("Error", "No emergency contact available");
+  }
+};
+
+
   //heatmap state
   const [geojson, setGeojson] = useState(null);
 
   useEffect(() => {
     updateHeatmap(setGeojson);
   }, []);
+
+  async function handleUpdateEmergencyContact(newContact) {
+    try {
+        const data =  Database.updateEmergencyContact(newContact);
+        console.log(data)
+        console.log(newContact)
+        if (data) {
+            Alert.alert("Success", "Emergency contact updated successfully!");
+        } else {
+            Alert.alert("Error", "Failed to update emergency contact.");
+        }
+    } catch (error) {
+        console.error("Error updating emergency contact:", error);
+        Alert.alert("Error", "An unexpected error occurred.");
+    }
+}
+
 
   // start getting location
   useEffect(() => {
@@ -289,9 +343,6 @@ export default function HomeScreen() {
             )}
           </Mapbox.MapView>
 
-          
-
-
 
           {/* Modals */}
           <OptionsModal visible={optionsModal} onClose={() => setOptionsModal(false)} logOutAccount={logOutAccount} />
@@ -314,9 +365,17 @@ export default function HomeScreen() {
               <Ionicons name="locate" size={24} color="white" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sosButton} onLongPress={triggerSOS}>
-              <Text style={styles.sosText}>SOS</Text>
-            </TouchableOpacity>
+            <TouchableOpacity 
+    style={styles.sosButton} 
+    onLongPress={async () => {
+        await handleUpdateEmergencyContact("703-581-2790"); // Step 1: Update contact
+        await fetchEmergencyContact(); // Step 2: Fetch updated contact
+        await sendText(); 
+    }}
+>
+    <Text style={styles.sosText}>SOS</Text>
+</TouchableOpacity>
+
 
             <TouchableOpacity style={styles.reportButton} onPress={() => setReportModalVisible(true) }>
               <Ionicons name="alert-circle-outline" size={24} color="white" />
