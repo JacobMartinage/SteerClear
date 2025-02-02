@@ -13,6 +13,8 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { GOOGLE_PLACES_API_KEY } from '@env';
 import { Keyboard, Pressable } from 'react-native';
 import { getDirections } from '../utils/routing'; 
+import IncidenceFilter from "../utils/incidence_filter";
+
 
 const api_key = GOOGLE_PLACES_API_KEY;
 const MAPBOX_ACCESS_TOKEN = 'sk.eyJ1IjoiamFxdWliaXMiLCJhIjoiY202bWp6Z2ZzMGtraDJrcHoxNjdrbm9qdSJ9.fix3XfnvCj6cqlj6D3vFpg';
@@ -21,6 +23,8 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute, setSteps
   const bottomSheetModalRef = useRef(null);
   const [destination, setDestination] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [totalDistance, setTotalDistance] = useState(null);
+
 
   useEffect(() => {
     const fetchUserLocation = async () => {
@@ -66,6 +70,19 @@ const Bottomcomp = ({ onAddressSelected = () => {}, location, setRoute, setSteps
       }
       
       const { lat, lng } = geoData.results[0].geometry.location;
+
+      const distance = IncidenceFilter.calcDistanceBetweenCoords(
+        (userLocation || location).latitude,
+        (userLocation || location).longitude,
+        lat,
+        lng
+      );
+
+      setTotalDistance(distance);
+
+      if (distance > 10000) {
+        Alert.alert('Distance Alert', `This is more than two miles! It is recommended you take alternate transport i.e Uber/Lyft/SafeRide`);
+      }
       await getDirections(
         userLocation || location,
         [lng, lat],
