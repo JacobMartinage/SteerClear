@@ -1,4 +1,4 @@
-# SafeWalk
+# SteerClear
 Project for HackViolet 2025. 
 
 # Inspiration
