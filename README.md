@@ -2,7 +2,7 @@
 Project for HackViolet 2025. 
 
 # Inspiration
-###The Seasons
+### The Seasons
 Our inspiration project came from one of the issues with winter - it gets dark too early. Due to it being dark out later, it tends to be more dangerous later in the winter as it gets dark significantly earlier. Safety should always be a top priority, and since many college students are out and about at nights, it is important for them to take safe routes back. Both the lighting, and also having minimal criminal activity are important (alongside the distance/ time to walk it of course).
 
 ### The Reality
@@ -16,31 +16,32 @@ SteerClear is a user-data-driven mobile application akin to Waze; however, the d
 
 # Full Features List:
 
-Interactive Map
-Community threat markers
-Community safety markers
-Smart route planning
-Panic button
-Heat map of all criminal/suspicious activity reported by community
-Reporting of safe areas
-Group Walk system
-College selection feature
-Alternate transportation recommendation system
-Turn by turn directions
-Recenter map feature
-Dynamic analyzation of threat/safety level (openai)
-Long press add waypoints to avoid
-How we built it
-Stack:
+- Interactive Map
+- Community threat markers
+- Community safety markers
+- Smart route planning
+- Panic button
+- Heat map of all criminal/suspicious activity reported by community
+- Reporting of safe areas
+- Group Walk system
+- College selection feature
+- Alternate transportation recommendation system
+- Turn by turn directions
+- Recenter map feature
+- Dynamic analyzation of threat/safety level (openai)
+- Long press add waypoints to avoid
+- How we built it
 
-Frontend: Expo React Native
-Styling: NativeWind + CSS
-Database: Supabase Postgres (RLS)
-Auth: Supabase Auth
-Backend: Serverless (Supabase Edge Functions)
-APIs: MapBox, Google Places, OpenAI
-Map Build Out
-We used the MapBox and google places AI to build out our map and all the features connected to it.
+**Stack:**
+
+- Frontend: Expo React Native
+- Styling: NativeWind + CSS
+- Database: Supabase Postgres (RLS)
+- Auth: Supabase Auth
+- Backend: Serverless (Supabase Edge Functions)
+- APIs: MapBox, Google Places, OpenAI
+- Map Build Out
+- We used the MapBox and google places AI to build out our map and all the features connected to it.
 
 ## Supabase (Serverless) Backend and DB
 Supabase edge functions served as our backend for this project, where we built out all of our functions, and then let supabae handle security and load balancing. This follows the FaaS (Functions as a Service) model, and allowed us to be very coherent and clear in our repository.
@@ -61,15 +62,15 @@ Serverless definitely made some things easier, but it was all of our first time'
 The future of SteerClear lies in expanding and strengthening features of our app. Many of the main draws of our app work great, but we know we can make them better. In addition to that, we want to expand our system to not only recommend when it is too dangerous to walk, but also give them price comparisons between all available options for travel (be it walking, uber, or saferide), creating the best user experience possible.
 
 ## Built With
-expo.io
-google-places
-javascript
-mapbox
-nativewind
-openai
-react-native
-supabase
-typescrip
+- expo.io
+- google-places
+- javascript
+- mapbox
+- nativewind
+- openai
+- react-native
+- supabase
+- typescrip
 
 # Demo Video
 https://youtu.be/P3OlZBgFtGw
