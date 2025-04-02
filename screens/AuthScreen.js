@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { signInWithEmail, signUpWithEmail, sendPasswordReset, addUsername } from '../utils/auth';
-import { CollegeInfo, getCollegesNames } from '../utils/college_info'
-
 
 import DropDownPicker from 'react-native-dropdown-picker';
-
 
 export default function AuthScreen() {
   
